@@ -1,0 +1,7 @@
+{
+  "name": "ForSênior Care",
+  "description": "Uma plataforma robusta para gestão de cuidados geriátricos, permitindo acompanhamento clínico, testes funcionais e gestão de demandas com foco em LGPD e usabilidade profissional.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
