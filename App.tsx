@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { User, UserRole, Medication, MedicationStatus } from './types';
 import Sidebar from './components/Sidebar';
 import PatientContextBar from './components/PatientContextBar';
+import { IconMenu } from './components/icons';
 import Dashboard from './features/Dashboard';
 import PatientList from './features/Patients';
 import Schedule from './features/Schedule';
@@ -118,9 +119,11 @@ const App: React.FC = () => {
       />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* TOP BAR MOBILE */}
-        <div className="md:hidden p-4 bg-deepBlue text-white flex justify-between items-center">
-           <button onClick={() => setIsSidebarOpen(true)} className="text-2xl">☰</button>
-           <h1 className="font-bold poppins">ForSênior</h1>
+        <div className="md:hidden p-4 bg-gradient-to-r from-[#0f5a7a] to-deepBlue text-white flex justify-between items-center shadow-lg shadow-deepBlue/20">
+           <button onClick={() => setIsSidebarOpen(true)} className="p-1.5 -ml-1.5 rounded-lg hover:bg-white/10 transition-colors">
+             <IconMenu className="w-6 h-6" />
+           </button>
+           <h1 className="font-bold poppins tracking-tight">ForSênior</h1>
            <div className="w-8"></div>
         </div>
 

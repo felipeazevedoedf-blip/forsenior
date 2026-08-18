@@ -1,6 +1,7 @@
 
 import React, { useMemo } from 'react';
 import { Card, Button, Badge } from '../components/ui';
+import { IconUsers, IconPill, IconTrendingUp, IconAlertTriangle, IconSiren } from '../components/icons';
 import { store } from '../services/store';
 import { User, Patient, Medication, Appointment } from '../types';
 import { analyticsService } from '../services/analytics';
@@ -72,7 +73,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSe
   if (!selectedPatient) {
     return (
       <Card className="py-24 text-center flex flex-col items-center gap-6 max-w-xl mx-auto mt-10 border-dashed border-2">
-        <span className="text-5xl opacity-20">🧑‍🤝‍🧑</span>
+        <div className="w-16 h-16 rounded-2xl bg-deepBlue/5 dark:bg-sky-500/10 flex items-center justify-center text-deepBlue/30 dark:text-sky-400/40">
+          <IconUsers className="w-8 h-8" />
+        </div>
         <div>
           <p className="text-lg font-bold text-textDark dark:text-slate-100 poppins">Nenhum paciente selecionado</p>
           <p className="text-sm text-gray-400 mt-1">Selecione um paciente para ver o resumo do dia.</p>
@@ -92,9 +95,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSe
   return (
     <div className="space-y-6 animate-fade-in max-w-7xl mx-auto pb-24">
       {/* HEADER: CONTEXTO E STATUS */}
-      <header className="bg-white p-6 md:p-8 rounded-[24px] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <header className="relative bg-white dark:bg-slate-800 p-6 md:p-8 rounded-[24px] shadow-[0_10px_28px_-14px_rgba(13,79,106,0.22)] border border-gray-100 dark:border-slate-700/50 overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-deepBlue via-[#1a7ba3] to-vitalGreen"></div>
         <div className="flex items-center gap-5">
-          <div className="w-14 h-14 bg-deepBlue rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-deepBlue/20">
+          <div className="w-14 h-14 bg-gradient-to-br from-[#12608A] to-deepBlue rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-deepBlue/25">
             {selectedPatient.nomeCompleto.charAt(0)}
           </div>
           <div>
@@ -192,7 +196,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSe
 
             {nextMedication ? (
               <div className="p-4 bg-vitalGreen/5 border border-vitalGreen/20 rounded-2xl flex items-center gap-4 animate-fade-in">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm">💊</div>
+                <div className="w-10 h-10 bg-white dark:bg-slate-700 rounded-xl flex items-center justify-center text-vitalGreen shadow-sm"><IconPill className="w-5 h-5" /></div>
                 <div>
                   <p className="text-sm font-bold text-textDark">{nextMedication.med.name}</p>
                   <p className="text-[10px] text-gray-500 font-medium">{nextMedication.med.dosage} • {nextMedication.med.route}</p>
@@ -224,7 +228,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSe
                   <span className="text-xs font-bold text-gray-400 mb-2">pts</span>
                 </div>
                 <div className="inline-flex items-center gap-2 bg-vitalGreen/10 text-vitalGreen px-3 py-1 rounded-full text-[10px] font-bold">
-                  <span>📈</span> Evolução Estável (Ref: {new Date(lastTest.date).toLocaleDateString()})
+                  <IconTrendingUp className="w-3.5 h-3.5" /> Evolução Estável (Ref: {new Date(lastTest.date).toLocaleDateString()})
                 </div>
               </div>
             )}
@@ -242,7 +246,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSe
             ) : (
               analysis?.factors.slice(0, 3).map((f, i) => (
                 <div key={i} className={`p-3 rounded-xl border flex items-center gap-3 ${f.points >= 5 ? 'bg-red-50 border-red-100 text-red-700' : 'bg-white border-gray-100 text-textDark'}`}>
-                   <span className="text-lg">{f.category === 'Medicação' ? '💊' : '⚠️'}</span>
+                   {f.category === 'Medicação' ? <IconPill className="w-4.5 h-4.5 shrink-0" /> : <IconAlertTriangle className="w-4.5 h-4.5 shrink-0" />}
                    <p className="text-[11px] font-bold leading-tight">{f.description}</p>
                 </div>
               ))
@@ -258,7 +262,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSe
       {/* FOOTER DISCRETO: EMERGENCY ACTION */}
       <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-xs px-4 md:hidden">
          <Button variant="danger" className="w-full h-14 rounded-full shadow-2xl flex items-center justify-center gap-3">
-            <span className="text-2xl">🚨</span>
+            <IconSiren className="w-5 h-5" />
             <span className="font-black uppercase tracking-widest text-sm">Emergência</span>
          </Button>
       </footer>
