@@ -4,6 +4,7 @@ import { Card, Button, Badge, Modal, Input } from '../components/ui';
 import { store } from '../services/store';
 import { Patient, User, UserRole, PatientTimelineEvent, ClinicalReport } from '../types';
 import { securityService } from '../services/security';
+import { IconEye, IconPill, IconClock, IconUser, IconFolder } from '../components/icons';
 import PatientTimeline from './PatientTimeline';
 import PatientClinicalOverview from './PatientClinicalOverview';
 import MedicationModule from './MedicationModule';
@@ -45,11 +46,11 @@ const PatientDetail: React.FC<{ patientId: string, user: User, onBack: () => voi
 
       <div className="flex border-b border-gray-200 dark:border-slate-800 overflow-x-auto gap-4">
         {[
-          { id: 'overview', label: 'Visão 360º', icon: '👁️', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-          { id: 'meds', label: 'Medicamentos', icon: '💊', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-          { id: 'timeline', label: 'Histórico', icon: '🕒', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
-          { id: 'info', label: 'Informações', icon: '👤', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-          { id: 'docs', label: 'Arquivos', icon: '📁', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] }
+          { id: 'overview', label: 'Visão 360º', Icon: IconEye, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+          { id: 'meds', label: 'Medicamentos', Icon: IconPill, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+          { id: 'timeline', label: 'Histórico', Icon: IconClock, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+          { id: 'info', label: 'Informações', Icon: IconUser, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+          { id: 'docs', label: 'Arquivos', Icon: IconFolder, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] }
         ].filter(tab => tab.roles.includes(user.role)).map(tab => (
           <button
             key={tab.id}
@@ -58,7 +59,7 @@ const PatientDetail: React.FC<{ patientId: string, user: User, onBack: () => voi
               activeTab === tab.id ? 'border-[#0D4F6A] text-[#0D4F6A] dark:text-sky-400 dark:border-sky-400' : 'border-transparent text-gray-400'
             }`}
           >
-            <span>{tab.icon}</span> {tab.label}
+            <tab.Icon className="w-4 h-4" /> {tab.label}
           </button>
         ))}
       </div>

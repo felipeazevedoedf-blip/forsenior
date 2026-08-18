@@ -1,6 +1,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { Card, Button, Badge } from './ui';
+import { IconPill, IconCheck, IconClock, IconX } from './icons';
 import { Medication, MedicationStatus } from '../types';
 
 interface MedicationAlarmProps {
@@ -52,8 +53,8 @@ const MedicationAlarm: React.FC<MedicationAlarmProps> = ({ medication, time, onA
       <Card className="w-full max-w-lg bg-white shadow-2xl border-none overflow-hidden transform scale-110">
         <div className="p-8 text-center space-y-6">
           <div className="flex justify-center">
-            <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center text-5xl animate-bounce">
-              💊
+            <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center text-red-500 animate-bounce">
+              <IconPill className="w-11 h-11" />
             </div>
           </div>
           
@@ -68,25 +69,25 @@ const MedicationAlarm: React.FC<MedicationAlarmProps> = ({ medication, time, onA
           </div>
 
           <div className="grid grid-cols-1 gap-4 pt-4">
-             <button 
+             <button
               onClick={() => onAction('taken')}
-              className="w-full py-6 bg-green-600 hover:bg-green-700 text-white rounded-3xl text-2xl font-black shadow-xl shadow-green-900/20 transition-all active:scale-95"
+              className="w-full py-6 bg-green-600 hover:bg-green-700 text-white rounded-3xl text-2xl font-black shadow-xl shadow-green-900/20 transition-all active:scale-95 flex items-center justify-center gap-3"
              >
-               ✅ JÁ TOMEI
+               <IconCheck className="w-7 h-7" /> JÁ TOMEI
              </button>
-             
+
              <div className="grid grid-cols-2 gap-4">
-               <button 
+               <button
                 onClick={() => onAction('snoozed')}
-                className="py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest transition-all"
+                className="py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
                >
-                 ⏳ EM 10 MIN
+                 <IconClock className="w-4 h-4" /> EM 10 MIN
                </button>
-               <button 
+               <button
                 onClick={() => onAction('missed')}
-                className="py-4 bg-gray-200 hover:bg-gray-300 text-gray-500 rounded-2xl text-sm font-black uppercase tracking-widest transition-all"
+                className="py-4 bg-gray-200 hover:bg-gray-300 text-gray-500 rounded-2xl text-sm font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
                >
-                 ❌ NÃO TOMEI
+                 <IconX className="w-4 h-4" /> NÃO TOMEI
                </button>
              </div>
           </div>

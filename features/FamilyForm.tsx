@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, Button, Input } from '../components/ui';
+import { IconXCircle, IconStethoscope, IconCalendar, IconPill, IconClipboardList, IconPhone, IconHeart, IconX, IconClock } from '../components/icons';
 import { store } from '../services/store';
 import { FamilyAssessment, FamilyAccessRequest, PatientLog } from '../types';
 
@@ -284,7 +285,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
     return (
       <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-10 space-y-6">
-          <div className="text-5xl">⏳</div>
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center"><IconClock className="w-7 h-7" /></div>
           <h1 className="text-xl font-bold text-[#0D4F6A] poppins">Solicitação em análise</h1>
           <p className="text-gray-500 text-sm">A clínica ainda não aprovou este acesso. Guarde seu código para consultar mais tarde:</p>
           <div className="p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
@@ -303,7 +304,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
     return (
       <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-10 space-y-6">
-          <div className="text-5xl">🚫</div>
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-red-50 text-red-500 flex items-center justify-center"><IconXCircle className="w-7 h-7" /></div>
           <h1 className="text-xl font-bold text-red-600 poppins">Acesso não aprovado</h1>
           <p className="text-gray-500 text-sm">A clínica não aprovou esta solicitação. Entre em contato com a equipe para mais informações.</p>
           <button onClick={() => setStep('entry')} className="text-[11px] font-bold text-gray-400 hover:text-[#0D4F6A]">← Voltar</button>
@@ -344,26 +345,26 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
               "Hoje o Sr. {selectedPatient.nomeCompleto.split(' ')[0]} estava muito disposto! Participou da fisioterapia com alegria e se alimentou super bem."
             </p>
             <div className="mt-4 flex items-center gap-2">
-               <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px]">🩺</div>
+               <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center"><IconStethoscope className="w-3.5 h-3.5" /></div>
                <span className="text-[10px] font-bold opacity-80">Enfermeira Responsável • Hoje às 10:30</span>
             </div>
           </Card>
 
           <div className="grid grid-cols-2 gap-4">
             <Card className="text-center p-4">
-              <span className="text-2xl mb-1 block">📅</span>
+              <IconCalendar className="w-6 h-6 mb-1 mx-auto text-[#0D4F6A]" />
               <p className="text-[10px] font-black text-gray-400 uppercase">Próxima Visita</p>
               <p className="font-bold text-[#0D4F6A]">{nextApp ? new Date(nextApp.date).toLocaleDateString() : 'A agendar'}</p>
             </Card>
             <Card className="text-center p-4">
-              <span className="text-2xl mb-1 block">💊</span>
+              <IconPill className="w-6 h-6 mb-1 mx-auto text-vitalGreen" />
               <p className="text-[10px] font-black text-gray-400 uppercase">Medicação</p>
               <p className="font-bold text-green-600">Em dia</p>
             </Card>
           </div>
 
           <Card className="border-2 border-dashed border-blue-200 bg-blue-50/30 flex flex-col items-center p-8 gap-4 text-center">
-             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm">📋</div>
+             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-[#0D4F6A] shadow-sm"><IconClipboardList className="w-7 h-7" /></div>
              <div>
                <h4 className="font-bold text-[#0D4F6A] poppins">Avaliação Semanal</h4>
                <p className="text-sm text-gray-500">Conte para a equipe como o idoso se comportou nos últimos dias em casa.</p>
@@ -372,8 +373,8 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
           </Card>
 
           <div className="text-center pt-10">
-            <button onClick={() => window.location.href='tel:0800000000'} className="text-xs font-bold text-[#0D4F6A] opacity-50 hover:opacity-100 transition-opacity">
-              📞 Precisa falar com a clínica? Ligar agora.
+            <button onClick={() => window.location.href='tel:0800000000'} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0D4F6A] opacity-50 hover:opacity-100 transition-opacity">
+              <IconPhone className="w-3.5 h-3.5" /> Precisa falar com a clínica? Ligar agora.
             </button>
           </div>
         </main>
@@ -385,7 +386,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
     return (
       <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-10 space-y-6 animate-fade-in">
-          <div className="text-6xl mb-4">❤️</div>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-50 text-red-400 flex items-center justify-center"><IconHeart className="w-8 h-8" /></div>
           <h1 className="text-2xl font-bold text-[#0D4F6A] poppins">Informações Recebidas!</h1>
           <p className="text-gray-500">Obrigado por participar. Seus dados já estão no prontuário digital da nossa equipe.</p>
           <div className="pt-6">
@@ -400,7 +401,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
     <div className="min-h-screen bg-white">
       <header className="bg-[#F4F6F8] p-6 sticky top-0 z-50">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button onClick={() => setStep('portal')} className="text-[#0D4F6A] font-bold">✕ Cancelar</button>
+          <button onClick={() => setStep('portal')} className="inline-flex items-center gap-1 text-[#0D4F6A] font-bold"><IconX className="w-3.5 h-3.5" /> Cancelar</button>
           <h2 className="font-bold poppins text-[#0D4F6A]">Formulário de Observação</h2>
           <div className="w-10"></div>
         </div>

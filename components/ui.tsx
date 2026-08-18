@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { IconX } from './icons';
+import { IconX, IconAlertTriangle } from './icons';
 
 export const Button: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'accent',
@@ -65,8 +65,8 @@ export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { lab
       {...props}
     />
     {error && (
-      <p className="mt-1.5 text-[10px] text-red-500 dark:text-rose-400 font-bold uppercase tracking-wide ml-1 animate-fade-in">
-        ⚠ {error}
+      <p className="mt-1.5 flex items-center gap-1 text-[10px] text-red-500 dark:text-rose-400 font-bold uppercase tracking-wide ml-1 animate-fade-in">
+        <IconAlertTriangle className="w-3 h-3" /> {error}
       </p>
     )}
   </div>

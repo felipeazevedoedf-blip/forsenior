@@ -4,6 +4,7 @@ import { Card, Button, Input, Modal, Badge } from '../components/ui';
 import { store } from '../services/store';
 import { FunctionalTest, Patient, User, UserRole } from '../types';
 import { TEST_TYPES, COLORS } from '../constants';
+import { IconActivity, IconTrendingUp, IconHand, IconScale, IconAlertTriangle, IconBrain, IconRuler, IconClipboardList, IconProps } from '../components/icons';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface TestCardProps {
@@ -127,8 +128,9 @@ const FunctionalTests: React.FC<FunctionalTestsProps> = ({ user, patientId, onSe
     setIsModalOpen(true);
   };
 
-  const testIcons: Record<string, string> = {
-    TUG: '🚶', SitStand: '🪑', ManualGrip: '✊', GaitBalance: '⚖️', FallScale: '🚨', MiniCog: '🧠', Flexibility: '📏', AVD: '📋'
+  const testIcons: Record<string, React.FC<IconProps>> = {
+    TUG: IconActivity, SitStand: IconTrendingUp, ManualGrip: IconHand, GaitBalance: IconScale,
+    FallScale: IconAlertTriangle, MiniCog: IconBrain, Flexibility: IconRuler, AVD: IconClipboardList
   };
 
   return (
@@ -163,8 +165,8 @@ const FunctionalTests: React.FC<FunctionalTestsProps> = ({ user, patientId, onSe
                   : 'bg-gray-50/50 dark:bg-slate-900 border-transparent text-gray-300 dark:text-slate-700 cursor-not-allowed opacity-50'
                 }`}
             >
-              <span className={`text-2xl transition-transform group-hover:scale-125 ${!selectedPatientId ? 'grayscale' : ''}`}>
-                {testIcons[type.id] || '📋'}
+              <span className={`text-deepBlue dark:text-sky-400 transition-transform group-hover:scale-125 ${!selectedPatientId ? 'grayscale' : ''}`}>
+                {React.createElement(testIcons[type.id] || IconClipboardList, { className: 'w-6 h-6' })}
               </span>
               <span className="text-[9px] font-black uppercase text-center text-deepBlue dark:text-sky-400 tracking-tighter">
                 {type.name.split(' (')[0]}

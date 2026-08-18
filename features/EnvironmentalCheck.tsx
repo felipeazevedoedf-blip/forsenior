@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Card, Button, Badge, Input } from '../components/ui';
+import { IconHomeCheck, IconCheckCircle, IconX, IconLightbulb } from '../components/icons';
 import { store } from '../services/store';
 import { User, EnvironmentalAssessment, Patient } from '../types';
 import { environmentalService, EnvironmentalAnalysis } from '../services/environmentalService';
@@ -78,7 +79,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
     <div className="space-y-6 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins">🏠 Check Ambiental Inteligente</h2>
+          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins flex items-center gap-2"><IconHomeCheck className="w-6 h-6" /> Check Ambiental Inteligente</h2>
           <p className="text-gray-500 font-medium">Avaliação de riscos no domicílio e prevenção de acidentes.</p>
         </div>
         <div className="flex gap-2">
@@ -98,7 +99,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
 
       {!selectedId ? (
         <Card className="py-32 text-center text-gray-400 flex flex-col items-center gap-4">
-          <span className="text-5xl opacity-20">🏡</span>
+          <IconHomeCheck className="w-12 h-12 opacity-20" />
           <p className="font-bold poppins">Inicie a auditoria ambiental selecionando um paciente.</p>
         </Card>
       ) : showHistory ? (
@@ -130,7 +131,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
                  <div className="space-y-4">
                     {analysis?.recommendations.map((rec, i) => (
                       <div key={i} className="flex gap-4 p-4 bg-blue-50 border border-blue-100 rounded-2xl">
-                         <span className="text-xl">✅</span>
+                         <IconCheckCircle className="w-5 h-5 shrink-0 text-blue-600" />
                          <p className="text-sm font-bold text-blue-900 leading-relaxed">{rec}</p>
                       </div>
                     ))}
@@ -173,7 +174,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
                   >
                     <span className="font-bold text-sm">{opt}</span>
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${currentCheck[activeTab === 'circulacao' ? 'circulation' : activeTab === 'iluminacao' ? 'lighting' : activeTab as keyof typeof currentCheck].includes(opt) ? 'bg-red-600 border-red-600' : 'border-gray-200'}`}>
-                      {currentCheck[activeTab === 'circulacao' ? 'circulation' : activeTab === 'iluminacao' ? 'lighting' : activeTab as keyof typeof currentCheck].includes(opt) && <span className="text-white text-xs">✕</span>}
+                      {currentCheck[activeTab === 'circulacao' ? 'circulation' : activeTab === 'iluminacao' ? 'lighting' : activeTab as keyof typeof currentCheck].includes(opt) && <IconX className="w-3.5 h-3.5 text-white" />}
                     </div>
                   </button>
                 ))}
@@ -186,7 +187,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
           </div>
 
           <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center gap-3">
-             <span className="text-xl">💡</span>
+             <IconLightbulb className="w-5 h-5 shrink-0 text-blue-600" />
              <p className="text-[10px] text-blue-800 font-bold leading-relaxed uppercase">
                Selecione os riscos identificados no domicílio. Este checklist estruturado não faz previsão automática de quedas — a análise de risco final é sempre feita pelo profissional responsável.
              </p>

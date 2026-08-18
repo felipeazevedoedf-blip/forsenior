@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, Button, Input, Modal, Badge } from '../components/ui';
+import { IconFileText, IconPhone, IconMail, IconClock, IconEdit } from '../components/icons';
 import { store } from '../services/store';
 import { Professional, UserRole, ProfessionalLog, User } from '../types';
 
@@ -185,30 +186,30 @@ const Professionals: React.FC<ProfessionalsProps> = ({ user }) => {
             <div className="space-y-3 mt-4 pt-4 border-t border-gray-100">
               {p.registroProfissional && (
                 <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <span className="p-2 bg-gray-50 rounded-lg">📄</span>
+                  <span className="p-2 bg-gray-50 rounded-lg text-gray-400"><IconFileText className="w-4 h-4" /></span>
                   <span className="font-bold text-[#0D4F6A]">{p.registroProfissional}</span>
                 </div>
               )}
               <div className="flex items-center gap-3 text-sm text-gray-600">
-                <span className="p-2 bg-gray-50 rounded-lg">📞</span>
+                <span className="p-2 bg-gray-50 rounded-lg text-gray-400"><IconPhone className="w-4 h-4" /></span>
                 <span className="font-medium">{p.phone}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
-                <span className="p-2 bg-gray-50 rounded-lg">✉️</span>
+                <span className="p-2 bg-gray-50 rounded-lg text-gray-400"><IconMail className="w-4 h-4" /></span>
                 <span className="truncate">{p.email}</span>
               </div>
             </div>
 
             <div className="mt-6 flex gap-2">
-              <Button size="sm" variant="ghost" className="flex-1 text-[11px]" onClick={() => handleOpenHistory(p)}>🕒 Histórico</Button>
+              <Button size="sm" variant="ghost" className="flex-1 text-[11px] gap-1.5" onClick={() => handleOpenHistory(p)}><IconClock className="w-3.5 h-3.5" /> Histórico</Button>
               {user.role !== UserRole.VIEWER && (
-                <Button 
-                  size="sm" 
-                  variant="primary" 
-                  className="flex-1 text-[11px] bg-[#0D4F6A]/10 text-[#0D4F6A] hover:bg-[#0D4F6A] hover:text-white" 
+                <Button
+                  size="sm"
+                  variant="primary"
+                  className="flex-1 text-[11px] gap-1.5 bg-[#0D4F6A]/10 text-[#0D4F6A] hover:bg-[#0D4F6A] hover:text-white"
                   onClick={() => handleOpenEdit(p)}
                 >
-                  ✏️ Editar
+                  <IconEdit className="w-3.5 h-3.5" /> Editar
                 </Button>
               )}
             </div>

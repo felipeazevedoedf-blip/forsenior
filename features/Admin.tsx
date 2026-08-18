@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, Button, Badge, Input } from '../components/ui';
+import { IconSettings, IconKey, IconDownload, IconXCircle } from '../components/icons';
 import { store } from '../services/store';
 import { User, UserRole, Professional, FamilyAccessRequest } from '../types';
 import { securityService } from '../services/security';
@@ -45,7 +46,7 @@ const Admin: React.FC<AdminProps> = ({ user }) => {
     <div className="space-y-8 animate-fade-in pb-20">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins">⚙️ Gestão e Auditoria</h2>
+          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins flex items-center gap-2"><IconSettings className="w-6 h-6" /> Gestão e Auditoria</h2>
           <p className="text-gray-500">Controle centralizado de permissões e logs de segurança (LGPD).</p>
         </div>
         <Badge variant="error">Módulo Restrito: ADMIN</Badge>
@@ -156,9 +157,9 @@ const Admin: React.FC<AdminProps> = ({ user }) => {
 
           <Card title="Ações de Segurança">
             <div className="space-y-3">
-              <Button variant="ghost" className="w-full text-xs font-bold text-left justify-start">🔐 Trocar Chaves de Criptografia</Button>
-              <Button variant="ghost" className="w-full text-xs font-bold text-left justify-start">📥 Baixar Backup Estruturado</Button>
-              <Button variant="ghost" className="w-full text-xs font-bold text-left justify-start text-red-600 border-red-100">🚫 Anonimizar Dados Inativos</Button>
+              <Button variant="ghost" className="w-full text-xs font-bold text-left justify-start gap-2"><IconKey className="w-4 h-4" /> Trocar Chaves de Criptografia</Button>
+              <Button variant="ghost" className="w-full text-xs font-bold text-left justify-start gap-2"><IconDownload className="w-4 h-4" /> Baixar Backup Estruturado</Button>
+              <Button variant="ghost" className="w-full text-xs font-bold text-left justify-start gap-2 text-red-600 border-red-100"><IconXCircle className="w-4 h-4" /> Anonimizar Dados Inativos</Button>
             </div>
           </Card>
         </div>

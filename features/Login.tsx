@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, Button } from '../components/ui';
+import { IconAlertTriangle } from '../components/icons';
 import { User, UserRole } from '../types';
 import { store } from '../services/store';
 import { auth, googleProvider, isFirebaseConfigured } from '../services/firebase';
@@ -88,8 +89,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, onFamilyPortal }) => {
             </div>
 
             {error && (
-              <div className="p-4 bg-red-50 text-red-600 text-[11px] font-bold rounded-xl border border-red-100 animate-fade-in">
-                ⚠️ {error}
+              <div className="p-4 bg-red-50 text-red-600 text-[11px] font-bold rounded-xl border border-red-100 animate-fade-in flex items-center gap-2">
+                <IconAlertTriangle className="w-4 h-4 shrink-0" /> {error}
               </div>
             )}
 

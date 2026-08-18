@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Input, Modal, Badge } from '../components/ui';
+import { IconCalendar, IconLink, IconUser, IconFileText, IconLock } from '../components/icons';
 import { store } from '../services/store';
 import { Appointment, AppointmentStatus, AppointmentServiceType, UserRole, User, Professional } from '../types';
 
@@ -111,13 +112,13 @@ const Schedule: React.FC<ScheduleProps> = ({ user }) => {
     <div className="space-y-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins">🗓️ Agenda Clínica</h2>
+          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins flex items-center gap-2"><IconCalendar className="w-6 h-6" /> Agenda Clínica</h2>
           <p className="text-gray-500">Gestão de atendimentos e registro de presença.</p>
         </div>
         <div className="flex gap-2">
           {user.role === UserRole.PROFESSIONAL && (
-             <Button variant="ghost" onClick={handleGoogleConnect} disabled={isGoogleSyncing} className="bg-white border-blue-100 text-blue-600">
-               {isGoogleSyncing ? "Conectando..." : "🔗 Google Calendar"}
+             <Button variant="ghost" onClick={handleGoogleConnect} disabled={isGoogleSyncing} className="bg-white border-blue-100 text-blue-600 gap-2">
+               <IconLink className="w-4 h-4" /> {isGoogleSyncing ? "Conectando..." : "Google Calendar"}
              </Button>
           )}
           <Button onClick={() => setIsModalOpen(true)} variant="primary" className="shadow-lg shadow-blue-900/10">
@@ -175,7 +176,7 @@ const Schedule: React.FC<ScheduleProps> = ({ user }) => {
         <div className="md:col-span-3 space-y-4">
           {filteredAppointments.length === 0 ? (
             <div className="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-gray-100">
-              <div className="text-5xl mb-4 opacity-20">📅</div>
+              <IconCalendar className="w-12 h-12 mb-4 mx-auto opacity-20" />
               <h3 className="text-xl font-bold text-[#0D4F6A] poppins">Sem compromissos</h3>
               <p className="text-gray-400 mt-2">Nenhum atendimento registrado para {new Date(selectedDate + 'T12:00:00').toLocaleDateString()}.</p>
             </div>
@@ -196,8 +197,8 @@ const Schedule: React.FC<ScheduleProps> = ({ user }) => {
                         </div>
                         <h3 className="text-xl font-bold text-[#0D4F6A] poppins mb-1">{app.patientName}</h3>
                         <div className="flex items-center gap-4 text-xs text-gray-500 font-medium">
-                           <span className="flex items-center gap-1">👤 {app.professionalName}</span>
-                           <span className="flex items-center gap-1">📝 {app.notes || 'Sem observações'}</span>
+                           <span className="flex items-center gap-1"><IconUser className="w-3.5 h-3.5" /> {app.professionalName}</span>
+                           <span className="flex items-center gap-1"><IconFileText className="w-3.5 h-3.5" /> {app.notes || 'Sem observações'}</span>
                         </div>
                       </div>
 
@@ -230,7 +231,7 @@ const Schedule: React.FC<ScheduleProps> = ({ user }) => {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Agendar Novo Atendimento">
         <div className="space-y-6">
           <div className="p-4 bg-yellow-50 rounded-2xl border border-yellow-100 mb-2">
-            <p className="text-[10px] text-yellow-800 font-bold leading-relaxed uppercase tracking-widest mb-1">🔒 Nota de Privacidade (LGPD)</p>
+            <p className="text-[10px] text-yellow-800 font-bold leading-relaxed uppercase tracking-widest mb-1 flex items-center gap-1.5"><IconLock className="w-3.5 h-3.5" /> Nota de Privacidade (LGPD)</p>
             <p className="text-xs text-yellow-700 font-medium">Os nomes dos pacientes e notas clínicas são criptografados. No Google Agenda, o evento aparecerá como "Atendimento ForSênior".</p>
           </div>
 

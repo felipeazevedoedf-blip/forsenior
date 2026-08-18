@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { store } from '../services/store';
 import { User, ChatMessage } from '../types';
 import { Button, Badge } from './ui';
+import { IconUsers } from './icons';
 
 interface TeamChatBarProps {
   user: User;
@@ -57,7 +58,7 @@ const TeamChatBar: React.FC<TeamChatBarProps> = ({ user }) => {
           className="px-4 h-12 flex items-center justify-between cursor-pointer hover:bg-gray-50 shrink-0"
         >
           <div className="flex items-center gap-3">
-            <span className="text-xl">👥</span>
+            <IconUsers className="w-5 h-5 text-[#0D4F6A]" />
             <div>
               <span className="text-sm font-bold text-[#0D4F6A] poppins">Canal da Equipe</span>
               {!isExpanded && messages.length > 0 && (

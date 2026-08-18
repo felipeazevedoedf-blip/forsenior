@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '../components/ui';
+import { IconClipboardList, IconEdit, IconCheck } from '../components/icons';
 import { store } from '../services/store';
 import { CareTask, Patient, User, CareTaskStatus } from '../types';
 
@@ -43,7 +44,7 @@ const CaregiverChecklist: React.FC<CaregiverChecklistProps> = ({ user }) => {
     <div className="space-y-6 animate-fade-in pb-20">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins">📝 Rotina Diária</h2>
+          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins flex items-center gap-2"><IconClipboardList className="w-6 h-6" /> Rotina Diária</h2>
           <p className="text-gray-500">Checklist de cuidados e atividades essenciais.</p>
         </div>
         <select 
@@ -58,7 +59,7 @@ const CaregiverChecklist: React.FC<CaregiverChecklistProps> = ({ user }) => {
 
       {!selectedPatientId ? (
         <Card className="py-20 text-center text-gray-400">
-          <span className="text-5xl block mb-4">✍️</span>
+          <IconEdit className="w-12 h-12 mb-4 mx-auto" />
           <p className="font-bold poppins">Selecione um paciente para ver sua rotina.</p>
         </Card>
       ) : (
@@ -79,7 +80,7 @@ const CaregiverChecklist: React.FC<CaregiverChecklistProps> = ({ user }) => {
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                       task.status === 'completed' ? 'bg-[#2E9E6A] border-[#2E9E6A]' : 'border-gray-200'
                     }`}>
-                      {task.status === 'completed' && <span className="text-white text-[10px]">✓</span>}
+                      {task.status === 'completed' && <IconCheck className="w-3 h-3 text-white" />}
                     </div>
                     <div>
                       <p className={`font-bold text-sm ${task.status === 'completed' ? 'text-green-800 line-through' : 'text-[#33383D]'}`}>

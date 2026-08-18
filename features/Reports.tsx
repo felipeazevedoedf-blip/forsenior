@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Card, Button, Badge } from '../components/ui';
+import { IconAlertTriangle, IconPrinter, IconClipboardList, IconActivity, IconPill, IconCalendar, IconStethoscope, IconBarChart } from '../components/icons';
 import { store } from '../services/store';
 import { User, Patient, FunctionalTest, Medication } from '../types';
 import { COLORS, TEST_TYPES } from '../constants';
@@ -226,7 +227,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                <div className="space-y-4">
                   {data.timeline.filter(e => e.type === 'CRITICAL_EVENT').slice(0, 5).map(event => (
                     <div key={event.id} className="p-4 bg-red-50 rounded-2xl border border-red-100 flex items-start gap-4">
-                       <span className="text-xl">⚠️</span>
+                       <IconAlertTriangle className="w-5 h-5 shrink-0 text-red-600" />
                        <div>
                           <p className="text-xs font-black text-red-600 uppercase mb-1">{new Date(event.timestamp).toLocaleDateString()}</p>
                           <p className="text-sm font-bold text-red-800">{event.title}</p>
@@ -261,18 +262,18 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
             <option value="">Selecione o Paciente...</option>
             {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
           </select>
-          <Button variant="ghost" className="bg-white" onClick={() => window.print()}>🖨️ Imprimir</Button>
+          <Button variant="ghost" className="bg-white gap-2" onClick={() => window.print()}><IconPrinter className="w-4 h-4" /> Imprimir</Button>
         </div>
       </header>
 
       {/* TABS DE RELATÓRIO */}
       <div className="flex border-b border-gray-200 overflow-x-auto gap-2 print:hidden">
         {[
-          { id: 'complete', label: 'Dossiê Completo', icon: '📋' },
-          { id: 'functional', label: 'Evolução Funcional', icon: '🚶' },
-          { id: 'medication', label: 'Aderência Farmaco', icon: '💊' },
-          { id: 'monthly', label: 'Relatório Mensal', icon: '🗓️' },
-          { id: 'external', label: 'Médico Externo', icon: '🩺' },
+          { id: 'complete', label: 'Dossiê Completo', Icon: IconClipboardList },
+          { id: 'functional', label: 'Evolução Funcional', Icon: IconActivity },
+          { id: 'medication', label: 'Aderência Farmaco', Icon: IconPill },
+          { id: 'monthly', label: 'Relatório Mensal', Icon: IconCalendar },
+          { id: 'external', label: 'Médico Externo', Icon: IconStethoscope },
         ].map(tab => (
           <button
             key={tab.id}
@@ -281,7 +282,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
               selectedType === tab.id ? 'border-deepBlue text-deepBlue' : 'border-transparent text-gray-400 hover:text-gray-600'
             }`}
           >
-            <span>{tab.icon}</span> {tab.label}
+            <tab.Icon className="w-4 h-4" /> {tab.label}
           </button>
         ))}
       </div>
@@ -301,7 +302,7 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
         </div>
       ) : (
         <Card className="py-40 text-center text-gray-400 border-dashed border-2 flex flex-col items-center gap-4">
-           <span className="text-6xl opacity-20">📊</span>
+           <IconBarChart className="w-14 h-14 opacity-20" />
            <p className="font-bold poppins text-lg">Selecione um paciente para carregar os indicadores analíticos.</p>
         </Card>
       )}
