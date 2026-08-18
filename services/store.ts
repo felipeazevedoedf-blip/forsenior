@@ -1,5 +1,5 @@
 
-import { Patient, User, UserRole, FunctionalTest, Appointment, Professional, AppointmentStatus, ClinicalReport, MacroGoal, MicroGoal, MacroGoalStatus, MicroGoalStatus, ChatMessage, ChatRoom, CareTask, VitalSign, ProfessionalLog, PatientLog, FamilyAssessment, PatientTimelineEvent, EnvironmentalAssessment, Medication, MedicationLog } from '../types';
+import { Patient, User, UserRole, FunctionalTest, Appointment, Professional, AppointmentStatus, ClinicalReport, MacroGoal, MicroGoal, MacroGoalStatus, MicroGoalStatus, ChatMessage, ChatRoom, CareTask, VitalSign, ProfessionalLog, PatientLog, FamilyAssessment, PatientTimelineEvent, EnvironmentalAssessment, Medication, MedicationLog, FamilyAccessRequest } from '../types';
 
 const STORE_KEY = 'forsenior_care_db';
 
@@ -23,6 +23,7 @@ type DB = {
   environmentalAssessments: EnvironmentalAssessment[];
   medications: Medication[];
   medicationLogs: MedicationLog[];
+  familyAccessRequests: FamilyAccessRequest[];
 };
 
 const INITIAL_DB: DB = {
@@ -72,12 +73,14 @@ const INITIAL_DB: DB = {
     { id: 'med-1', patientId: '1', name: 'Losartana', dosage: '50mg', times: ['08:00', '20:00'], frequency: '2x ao dia', route: 'Oral', startDate: '2024-01-01', isHighAlert: false, active: true },
     { id: 'med-2', patientId: '1', name: 'Varfarina', dosage: '5mg', times: ['18:00'], frequency: '1x ao dia', route: 'Oral', startDate: '2024-01-01', isHighAlert: true, active: true }
   ],
-  medicationLogs: []
+  medicationLogs: [],
+  familyAccessRequests: []
 };
 
 const getDB = (): DB => {
   const data = localStorage.getItem(STORE_KEY);
-  return data ? JSON.parse(data) : INITIAL_DB;
+  // Mescla com o DB inicial para não quebrar sessões salvas antes da adição de novos campos.
+  return data ? { ...INITIAL_DB, ...JSON.parse(data) } : INITIAL_DB;
 };
 
 const saveDB = (db: DB) => {
@@ -295,6 +298,25 @@ export const store = {
         timestamp: new Date().toISOString()
       });
     }
+    saveDB(db);
+  },
+
+  // --- PORTAL DA FAMÍLIA: solicitação de acesso e aprovação pelo Administrador ---
+  getFamilyAccessRequests: (patientId?: string) => {
+    const db = getDB();
+    return patientId ? db.familyAccessRequests.filter(r => r.patientId === patientId) : db.familyAccessRequests;
+  },
+  getFamilyAccessRequestByCode: (code: string) => {
+    return getDB().familyAccessRequests.find(r => r.accessCode.toUpperCase() === code.toUpperCase());
+  },
+  addFamilyAccessRequest: (req: FamilyAccessRequest) => {
+    const db = getDB();
+    db.familyAccessRequests.push(req);
+    saveDB(db);
+  },
+  updateFamilyAccessRequest: (updated: FamilyAccessRequest) => {
+    const db = getDB();
+    db.familyAccessRequests = db.familyAccessRequests.map(r => r.id === updated.id ? updated : r);
     saveDB(db);
   }
 };

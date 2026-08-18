@@ -188,7 +188,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
           <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center gap-3">
              <span className="text-xl">💡</span>
              <p className="text-[10px] text-blue-800 font-bold leading-relaxed uppercase">
-               Selecione os riscos identificados no domicílio. O ForSênior cruzará estes dados com o TUG e medicações para calcular o risco preditivo de queda.
+               Selecione os riscos identificados no domicílio. Este checklist estruturado não faz previsão automática de quedas — a análise de risco final é sempre feita pelo profissional responsável.
              </p>
           </div>
         </div>

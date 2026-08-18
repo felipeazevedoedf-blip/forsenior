@@ -8,9 +8,10 @@ import { signInWithPopup } from 'firebase/auth';
 
 interface LoginProps {
   onLogin: (user: User) => void;
+  onFamilyPortal?: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC<LoginProps> = ({ onLogin, onFamilyPortal }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [testRole, setTestRole] = useState<UserRole>(UserRole.PROFESSIONAL);
   const [error, setError] = useState<string | null>(null);
@@ -143,6 +144,15 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               >
                 Acessar via Modo de Demonstração
               </button>
+
+              {onFamilyPortal && (
+                <button
+                  onClick={onFamilyPortal}
+                  className="w-full py-3 text-xs font-bold text-[#2E9E6A] hover:underline transition-all"
+                >
+                  Sou Família ou Responsável
+                </button>
+              )}
             </div>
 
             <div className="relative">
@@ -160,9 +170,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           </div>
         </Card>
 
-        <div className="mt-8 text-center text-xs text-gray-500 space-x-4">
-          <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" className="hover:text-[#0D4F6A] transition-colors">Faturamento</a>
-          <span className="opacity-20">|</span>
+        <div className="mt-8 text-center text-xs text-gray-500">
           <span>v2.2.2 (Stable)</span>
         </div>
       </div>

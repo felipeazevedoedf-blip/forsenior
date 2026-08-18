@@ -1,13 +1,35 @@
 
 import React, { useState } from 'react';
-// Added missing Input import
-import { Card, Button, Badge, Input } from '../components/ui';
+import { Card, Button, Input } from '../components/ui';
 import { store } from '../services/store';
-import { FamilyAssessment, PatientLog, UserRole } from '../types';
+import { FamilyAssessment, FamilyAccessRequest, PatientLog } from '../types';
 
-const FamilyForm: React.FC = () => {
-  const [step, setStep] = useState<'intro' | 'portal' | 'form' | 'success'>('intro');
-  const [selectedPatientId, setSelectedPatientId] = useState('');
+interface FamilyFormProps {
+  onBack?: () => void;
+}
+
+// Portal da Família (Prompt Mestre, seção 4): nenhum acesso é liberado por simples
+// escolha de paciente. Todo acesso precisa de um cadastro (solicitação) aprovado
+// ou negado pelo Administrador da clínica antes de qualquer dado ser exibido.
+type FamilyStep = 'entry' | 'request' | 'pending' | 'denied' | 'portal' | 'form' | 'success';
+
+const generateAccessCode = () => Math.random().toString(36).slice(2, 8).toUpperCase();
+
+const FamilyForm: React.FC<FamilyFormProps> = ({ onBack }) => {
+  const [step, setStep] = useState<FamilyStep>('entry');
+  const [accessCode, setAccessCode] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [activeRequest, setActiveRequest] = useState<FamilyAccessRequest | null>(null);
+
+  const patients = store.getPatients();
+
+  const [requestForm, setRequestForm] = useState({
+    patientId: '',
+    requesterName: '',
+    relationship: '',
+    phone: ''
+  });
+
   const [formData, setFormData] = useState({
     respondentName: '',
     relationship: '',
@@ -16,10 +38,65 @@ const FamilyForm: React.FC = () => {
     consent: false
   });
 
-  const patients = store.getPatients();
-  const selectedPatient = patients.find(p => p.id === selectedPatientId);
-  const appointments = selectedPatientId ? store.getAppointments({ patientId: selectedPatientId }) : [];
+  const selectedPatient = patients.find(p => p.id === activeRequest?.patientId);
+  const appointments = activeRequest ? store.getAppointments({ patientId: activeRequest.patientId }) : [];
   const nextApp = appointments.find(a => new Date(a.date) >= new Date());
+
+  const handleCheckCode = () => {
+    const req = store.getFamilyAccessRequestByCode(accessCode.trim());
+    if (!req) {
+      setCodeError('Código não encontrado. Verifique e tente novamente.');
+      return;
+    }
+    setCodeError('');
+    setActiveRequest(req);
+    if (req.status === 'approved') {
+      setFormData(prev => ({ ...prev, respondentName: req.requesterName, relationship: req.relationship }));
+      setStep('portal');
+    } else if (req.status === 'denied') {
+      setStep('denied');
+    } else {
+      setStep('pending');
+    }
+  };
+
+  const handleRefreshStatus = () => {
+    if (!activeRequest) return;
+    const updated = store.getFamilyAccessRequestByCode(activeRequest.accessCode);
+    if (!updated) return;
+    setActiveRequest(updated);
+    if (updated.status === 'approved') {
+      setFormData(prev => ({ ...prev, respondentName: updated.requesterName, relationship: updated.relationship }));
+      setStep('portal');
+    } else if (updated.status === 'denied') {
+      setStep('denied');
+    }
+  };
+
+  const isRequestFormValid = () =>
+    requestForm.patientId && requestForm.requesterName.trim() && requestForm.relationship && requestForm.phone.trim();
+
+  const handleSubmitRequest = () => {
+    if (!isRequestFormValid()) return;
+    const patient = patients.find(p => p.id === requestForm.patientId);
+    if (!patient) return;
+
+    const req: FamilyAccessRequest = {
+      id: `far-${Date.now()}`,
+      clinicId: patient.clinicId,
+      patientId: patient.id,
+      patientName: patient.nomeCompleto,
+      requesterName: requestForm.requesterName,
+      relationship: requestForm.relationship,
+      phone: requestForm.phone,
+      accessCode: generateAccessCode(),
+      status: 'pending',
+      requestedAt: new Date().toISOString()
+    };
+    store.addFamilyAccessRequest(req);
+    setActiveRequest(req);
+    setStep('pending');
+  };
 
   const handleOptionSelect = (questionId: string, option: string) => {
     setFormData(prev => ({
@@ -30,20 +107,20 @@ const FamilyForm: React.FC = () => {
 
   const isFormValid = () => {
     const requiredQuestions = [
-      'mobility_house', 'mobility_stand', 'selfcare_bath', 'selfcare_dress', 
-      'selfcare_toilet', 'food_eat', 'food_drink', 'memory_routine', 
+      'mobility_house', 'mobility_stand', 'selfcare_bath', 'selfcare_dress',
+      'selfcare_toilet', 'food_eat', 'food_drink', 'memory_routine',
       'memory_recognize', 'comm_talk', 'comm_behavior', 'safety_falls', 'safety_supervision'
     ];
     const allAnswered = requiredQuestions.every(q => formData.answers[q]);
-    return allAnswered && formData.respondentName && formData.relationship && selectedPatientId && formData.consent;
+    return allAnswered && formData.respondentName && formData.relationship && activeRequest?.patientId && formData.consent;
   };
 
   const handleSubmit = () => {
-    if (!isFormValid()) return;
+    if (!isFormValid() || !activeRequest) return;
 
     const assessment: FamilyAssessment = {
       id: `fa-${Date.now()}`,
-      patientId: selectedPatientId,
+      patientId: activeRequest.patientId,
       patientName: selectedPatient?.nomeCompleto || 'Desconhecido',
       respondentName: formData.respondentName,
       relationship: formData.relationship,
@@ -60,7 +137,7 @@ const FamilyForm: React.FC = () => {
 
     const log: PatientLog = {
       id: `log-fa-${Date.now()}`,
-      patientId: selectedPatientId,
+      patientId: activeRequest.patientId,
       changedByUserId: 'system',
       changedByUserName: `Família (${formData.respondentName})`,
       timestamp: new Date().toISOString(),
@@ -105,7 +182,7 @@ const FamilyForm: React.FC = () => {
     }
   ];
 
-  if (step === 'intro') {
+  if (step === 'entry') {
     return (
       <div className="min-h-screen bg-[#FDFEFE] flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-8 space-y-6 border-none shadow-xl bg-white">
@@ -114,26 +191,133 @@ const FamilyForm: React.FC = () => {
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-[#0D4F6A] poppins">Portal da Família</h1>
-            <p className="text-gray-400 text-sm">Acompanhe e participe do cuidado de quem você ama.</p>
+            <p className="text-gray-400 text-sm">O acesso é individual e precisa ser aprovado pela clínica antes do primeiro uso.</p>
           </div>
-          <div className="space-y-4">
-            <select 
-              className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold outline-none focus:ring-2 focus:ring-[#0D4F6A] text-center"
-              value={selectedPatientId}
-              onChange={e => setSelectedPatientId(e.target.value)}
-            >
-              <option value="">Sou familiar de...</option>
-              {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
-            </select>
-            <Button 
-              className="w-full py-4 text-lg shadow-lg shadow-blue-900/10" 
-              disabled={!selectedPatientId}
-              onClick={() => setStep('portal')}
-            >
-              Acessar Portal
+
+          <div className="space-y-4 text-left">
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Já tenho um código de acesso</label>
+              <div className="flex gap-2">
+                <input
+                  className="flex-1 p-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold outline-none focus:ring-2 focus:ring-[#0D4F6A] text-center uppercase tracking-widest"
+                  placeholder="CÓDIGO"
+                  value={accessCode}
+                  onChange={e => { setAccessCode(e.target.value); setCodeError(''); }}
+                />
+                <Button onClick={handleCheckCode} disabled={!accessCode.trim()}>Entrar</Button>
+              </div>
+              {codeError && <p className="mt-2 text-[11px] font-bold text-red-500">{codeError}</p>}
+            </div>
+
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100"></div></div>
+              <div className="relative flex justify-center text-[10px]"><span className="px-3 bg-white text-gray-300 uppercase tracking-widest">ou</span></div>
+            </div>
+
+            <Button variant="ghost" className="w-full py-4" onClick={() => setStep('request')}>
+              Ainda não tenho acesso — Solicitar
             </Button>
           </div>
-          <p className="text-[10px] text-gray-300 uppercase font-black tracking-widest">Acesso seguro via ForSênior Care</p>
+
+          {onBack && (
+            <button onClick={onBack} className="text-[11px] font-bold text-gray-400 hover:text-[#0D4F6A] transition-colors">
+              ← Voltar
+            </button>
+          )}
+        </Card>
+      </div>
+    );
+  }
+
+  if (step === 'request') {
+    return (
+      <div className="min-h-screen bg-[#FDFEFE] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-8 space-y-6 border-none shadow-xl bg-white">
+          <div className="text-center space-y-2">
+            <h1 className="text-xl font-bold text-[#0D4F6A] poppins">Solicitar Acesso</h1>
+            <p className="text-gray-400 text-sm">Sua solicitação será analisada pela clínica antes da liberação do acesso.</p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Paciente</label>
+              <select
+                className="w-full p-4 rounded-2xl border border-gray-100 bg-gray-50 font-bold outline-none focus:ring-2 focus:ring-[#0D4F6A]"
+                value={requestForm.patientId}
+                onChange={e => setRequestForm({ ...requestForm, patientId: e.target.value })}
+              >
+                <option value="">Sou familiar de...</option>
+                {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
+              </select>
+            </div>
+
+            <Input label="Seu Nome Completo" placeholder="Ex: Maria Santos" value={requestForm.requesterName} onChange={e => setRequestForm({ ...requestForm, requesterName: e.target.value })} />
+
+            <div>
+              <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Parentesco</label>
+              <select
+                className="w-full p-4 rounded-2xl border border-gray-100 bg-white font-bold outline-none"
+                value={requestForm.relationship}
+                onChange={e => setRequestForm({ ...requestForm, relationship: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="Filho(a)">Filho(a)</option>
+                <option value="Cônjuge">Cônjuge</option>
+                <option value="Neto(a)">Neto(a)</option>
+                <option value="Cuidador(a)">Cuidador(a)</option>
+              </select>
+            </div>
+
+            <Input label="Telefone de Contato" placeholder="(00) 00000-0000" value={requestForm.phone} onChange={e => setRequestForm({ ...requestForm, phone: e.target.value })} />
+          </div>
+
+          <div className="flex gap-3">
+            <Button variant="ghost" className="flex-1" onClick={() => setStep('entry')}>Cancelar</Button>
+            <Button className="flex-1" disabled={!isRequestFormValid()} onClick={handleSubmitRequest}>Enviar Solicitação</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (step === 'pending') {
+    return (
+      <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center p-10 space-y-6">
+          <div className="text-5xl">⏳</div>
+          <h1 className="text-xl font-bold text-[#0D4F6A] poppins">Solicitação em análise</h1>
+          <p className="text-gray-500 text-sm">A clínica ainda não aprovou este acesso. Guarde seu código para consultar mais tarde:</p>
+          <div className="p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+            <p className="text-2xl font-black tracking-[0.3em] text-[#0D4F6A]">{activeRequest?.accessCode}</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <Button onClick={handleRefreshStatus}>Verificar novamente</Button>
+            <button onClick={() => setStep('entry')} className="text-[11px] font-bold text-gray-400 hover:text-[#0D4F6A]">← Voltar</button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (step === 'denied') {
+    return (
+      <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center p-10 space-y-6">
+          <div className="text-5xl">🚫</div>
+          <h1 className="text-xl font-bold text-red-600 poppins">Acesso não aprovado</h1>
+          <p className="text-gray-500 text-sm">A clínica não aprovou esta solicitação. Entre em contato com a equipe para mais informações.</p>
+          <button onClick={() => setStep('entry')} className="text-[11px] font-bold text-gray-400 hover:text-[#0D4F6A]">← Voltar</button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!activeRequest || !selectedPatient) {
+    return (
+      <div className="min-h-screen bg-[#F4F6F8] flex items-center justify-center p-4">
+        <Card className="max-w-md w-full text-center p-10">
+          <p className="text-gray-400">Sessão expirada.</p>
+          <Button className="mt-4" onClick={() => setStep('entry')}>Voltar ao início</Button>
         </Card>
       </div>
     );
@@ -144,10 +328,10 @@ const FamilyForm: React.FC = () => {
       <div className="min-h-screen bg-[#F4F6F8]">
         <header className="bg-white p-6 border-b border-gray-100 sticky top-0 z-10">
           <div className="max-w-2xl mx-auto flex items-center justify-between">
-            <button onClick={() => setStep('intro')} className="text-gray-400 font-bold">← Sair</button>
+            <button onClick={() => { setActiveRequest(null); setStep('entry'); }} className="text-gray-400 font-bold">← Sair</button>
             <div className="text-center">
               <p className="text-[10px] font-black text-gray-400 uppercase">Portal do Familiar</p>
-              <h2 className="font-bold text-[#0D4F6A] poppins">{selectedPatient?.nomeCompleto}</h2>
+              <h2 className="font-bold text-[#0D4F6A] poppins">{selectedPatient.nomeCompleto}</h2>
             </div>
             <div className="w-8 h-8 rounded-full bg-blue-50"></div>
           </div>
@@ -157,7 +341,7 @@ const FamilyForm: React.FC = () => {
           <Card className="bg-gradient-to-br from-[#0D4F6A] to-[#1a6b8a] text-white border-none">
             <h3 className="text-xs font-black opacity-70 uppercase mb-4 tracking-widest">Recado da Equipe</h3>
             <p className="text-lg font-medium leading-relaxed italic">
-              "Hoje o Sr. {selectedPatient?.nomeCompleto.split(' ')[0]} estava muito disposto! Participou da fisioterapia com alegria e se alimentou super bem."
+              "Hoje o Sr. {selectedPatient.nomeCompleto.split(' ')[0]} estava muito disposto! Participou da fisioterapia com alegria e se alimentou super bem."
             </p>
             <div className="mt-4 flex items-center gap-2">
                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-[10px]">🩺</div>
@@ -186,7 +370,7 @@ const FamilyForm: React.FC = () => {
              </div>
              <Button className="w-full" onClick={() => setStep('form')}>Responder Formulário</Button>
           </Card>
-          
+
           <div className="text-center pt-10">
             <button onClick={() => window.location.href='tel:0800000000'} className="text-xs font-bold text-[#0D4F6A] opacity-50 hover:opacity-100 transition-opacity">
               📞 Precisa falar com a clínica? Ligar agora.
@@ -228,7 +412,7 @@ const FamilyForm: React.FC = () => {
             <Input label="Seu Nome" placeholder="Ex: Maria Santos" value={formData.respondentName} onChange={e => setFormData({...formData, respondentName: e.target.value})} />
             <div>
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Parentesco</label>
-              <select 
+              <select
                  className="w-full p-4 rounded-2xl border border-gray-100 bg-white font-bold outline-none"
                  value={formData.relationship}
                  onChange={e => setFormData({...formData, relationship: e.target.value})}
@@ -255,8 +439,8 @@ const FamilyForm: React.FC = () => {
                       key={opt}
                       onClick={() => handleOptionSelect(q.id, opt)}
                       className={`p-4 rounded-2xl border-2 text-left font-bold transition-all ${
-                        formData.answers[q.id] === opt 
-                        ? 'border-[#0D4F6A] bg-[#0D4F6A]/5 text-[#0D4F6A]' 
+                        formData.answers[q.id] === opt
+                        ? 'border-[#0D4F6A] bg-[#0D4F6A]/5 text-[#0D4F6A]'
                         : 'border-gray-100 text-gray-400'
                       }`}
                     >
@@ -270,7 +454,7 @@ const FamilyForm: React.FC = () => {
         ))}
 
         <Card title="Observações Livres">
-          <textarea 
+          <textarea
             className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none min-h-[100px]"
             placeholder="Alguma mudança no comportamento ou saúde?"
             value={formData.observations}
@@ -279,9 +463,9 @@ const FamilyForm: React.FC = () => {
         </Card>
 
         <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl">
-          <input 
-            type="checkbox" 
-            className="mt-1 w-5 h-5 accent-[#0D4F6A]" 
+          <input
+            type="checkbox"
+            className="mt-1 w-5 h-5 accent-[#0D4F6A]"
             checked={formData.consent}
             onChange={e => setFormData({...formData, consent: e.target.checked})}
           />
@@ -291,8 +475,8 @@ const FamilyForm: React.FC = () => {
         </div>
 
         <div className="pb-10">
-          <Button 
-            className="w-full py-5 text-lg" 
+          <Button
+            className="w-full py-5 text-lg"
             disabled={!isFormValid()}
             onClick={handleSubmit}
           >

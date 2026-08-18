@@ -13,6 +13,8 @@ import Professionals from './features/Professionals';
 import Admin from './features/Admin';
 import CaregiverChecklist from './features/CaregiverChecklist';
 import Login from './features/Login';
+import FamilyForm from './features/FamilyForm';
+import TeamChatBar from './components/TeamChatBar';
 import MedicationModule from './features/MedicationModule';
 import MedicationAlarm from './components/MedicationAlarm';
 import EnvironmentalCheck from './features/EnvironmentalCheck';
@@ -21,9 +23,9 @@ import { store } from './services/store';
 import { auth } from './services/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
-// Nota (Prompt Mestre, seções 17 e 18): IA Preditiva de Queda (FallPrediction /
-// SafetyIntelligence / predictionService), Wearables e Chat Interno (TeamChatBar /
-// Chat) permanecem DESATIVADOS — não são importados nem roteados aqui de propósito.
+// Nota: IA Preditiva de Queda foi removida do projeto (não faz parte do escopo).
+// Wearables e o chat individual 1:1 (Chat.tsx) permanecem DESATIVADOS por ora
+// (Prompt Mestre, seção 18) — só o Chat Interno em grupo (TeamChatBar) foi liberado.
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(store.getCurrentUser());
@@ -34,6 +36,9 @@ const App: React.FC = () => {
   const [activeAlarm, setActiveAlarm] = useState<{ med: Medication, time: string } | null>(null);
   // Paciente em contexto (seção 5): nunca inicia com um paciente pré-selecionado.
   const [selectedPatientId, setSelectedPatientId] = useState('');
+  // Portal da Família roda fora do login profissional, mas só libera dados
+  // depois de uma solicitação aprovada pelo Administrador (ver FamilyForm).
+  const [showFamilyPortal, setShowFamilyPortal] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -95,7 +100,8 @@ const App: React.FC = () => {
   };
 
   if (isInitializing) return <div className="h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950"><div className="w-10 h-10 border-4 border-deepBlue dark:border-sky-500 border-t-transparent rounded-full animate-spin"></div></div>;
-  if (!currentUser) return <Login onLogin={setCurrentUser} />;
+  if (showFamilyPortal) return <FamilyForm onBack={() => setShowFamilyPortal(false)} />;
+  if (!currentUser) return <Login onLogin={setCurrentUser} onFamilyPortal={() => setShowFamilyPortal(true)} />;
 
   return (
     <div className={`flex h-screen bg-backgroundGray dark:bg-darkBg overflow-hidden ${isDarkMode ? 'dark' : ''}`}>
@@ -119,6 +125,7 @@ const App: React.FC = () => {
         </div>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-8">
+          <TeamChatBar user={currentUser} />
           {currentPath !== 'dashboard' && (
             <PatientContextBar
               patients={store.getPatients()}

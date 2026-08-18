@@ -5,8 +5,7 @@ import { store } from '../services/store';
 import { User, Patient, FunctionalTest, Medication } from '../types';
 import { COLORS, TEST_TYPES } from '../constants';
 import { riskService } from '../services/riskService';
-import { predictionService } from '../services/predictionService';
-import { 
+import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   BarChart, Bar, Legend, AreaChart, Area, LineChart, Line 
 } from 'recharts';
