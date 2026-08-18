@@ -16,12 +16,18 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ 
   user, onNavigate, currentPath, onLogout, isOpen, onClose, isDarkMode, toggleDarkMode 
 }) => {
-  // Estrutura simplificada e validada para 7 itens no máximo
+  // Menu Profissional: centraliza todas as funcionalidades definidas no Prompt Mestre (seção 6).
   const menuItems = [
     { id: 'dashboard', label: 'Início', icon: '🏠', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+    { id: 'patients', label: 'Pacientes', icon: '🧑‍🤝‍🧑', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+    { id: 'schedule', label: 'Agenda', icon: '🗓️', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
     { id: 'medications', label: 'Remédios', icon: '💊', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-    { id: 'routine', label: 'Atividades do Dia', icon: '📋', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+    { id: 'tests', label: 'Testes Funcionais', icon: '📈', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
     { id: 'macro_cycle', label: 'Metas', icon: '🎯', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+    { id: 'routine', label: 'Atividades do Dia', icon: '📋', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+    { id: 'safety', label: 'Checklist de Risco', icon: '🚨', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+    { id: 'env_check', label: 'Checklist Ambiental', icon: '🏠', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+    { id: 'professionals', label: 'Equipe', icon: '🩺', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
     { id: 'reports', label: 'Relatório para médico', icon: '📊', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
     { id: 'emergency', label: 'Emergência', icon: '🆘', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER], isCritical: true },
     { id: 'admin', label: 'Configurações', icon: '⚙️', roles: [UserRole.ADMIN] },

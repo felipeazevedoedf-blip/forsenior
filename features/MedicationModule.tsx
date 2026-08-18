@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, Button, Input, Modal, Badge } from '../components/ui';
 import { store } from '../services/store';
 import { Medication, Patient, User, UserRole, MedicationLog, MedicationStatus } from '../types';
@@ -8,10 +8,20 @@ import { COLORS } from '../constants';
 interface MedicationModuleProps {
   user: User;
   patientId?: string;
+  onSelectPatient?: (id: string) => void;
 }
 
-const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: initialPatientId }) => {
+const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: initialPatientId, onSelectPatient }) => {
   const [selectedPatientId, setSelectedPatientId] = useState<string>(initialPatientId || '');
+
+  useEffect(() => {
+    setSelectedPatientId(initialPatientId || '');
+  }, [initialPatientId]);
+
+  const handleSelectPatient = (id: string) => {
+    setSelectedPatientId(id);
+    onSelectPatient?.(id);
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isJustifyModalOpen, setIsJustifyModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'active' | 'history'>('active');
@@ -112,7 +122,7 @@ const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: in
             <select 
               className="flex-1 md:w-64 px-4 py-3 rounded-xl border border-gray-100 bg-white font-bold text-sm text-deepBlue shadow-sm outline-none focus:ring-2 focus:ring-deepBlue/10"
               value={selectedPatientId}
-              onChange={e => setSelectedPatientId(e.target.value)}
+              onChange={e => handleSelectPatient(e.target.value)}
             >
               <option value="">Selecione o Paciente...</option>
               {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}

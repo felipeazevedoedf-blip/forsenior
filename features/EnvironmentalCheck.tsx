@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, Button, Badge, Input } from '../components/ui';
 import { store } from '../services/store';
 import { User, EnvironmentalAssessment, Patient } from '../types';
@@ -8,11 +8,21 @@ import { environmentalService, EnvironmentalAnalysis } from '../services/environ
 interface EnvironmentalCheckProps {
   user: User;
   patientId?: string;
+  onSelectPatient?: (id: string) => void;
 }
 
-const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId }) => {
+const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId, onSelectPatient }) => {
   const patients = store.getPatients();
   const [selectedId, setSelectedId] = useState(patientId || '');
+
+  useEffect(() => {
+    setSelectedId(patientId || '');
+  }, [patientId]);
+
+  const handleSelectPatient = (id: string) => {
+    setSelectedId(id);
+    onSelectPatient?.(id);
+  };
   const [activeTab, setActiveTab] = useState<'quarto' | 'banheiro' | 'cozinha' | 'geral'>('quarto');
   const [showHistory, setShowHistory] = useState(false);
 
@@ -76,7 +86,7 @@ const EnvironmentalCheck: React.FC<EnvironmentalCheckProps> = ({ user, patientId
             <select 
               className="w-full md:w-64 px-4 py-2 rounded-xl border border-gray-100 bg-white font-bold text-sm text-[#0D4F6A] shadow-sm outline-none focus:ring-2 focus:ring-[#0D4F6A]"
               value={selectedId}
-              onChange={e => setSelectedId(e.target.value)}
+              onChange={e => handleSelectPatient(e.target.value)}
             >
               <option value="">Selecione o Paciente...</option>
               {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}

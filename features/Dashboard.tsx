@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Card, Button, Badge } from '../components/ui';
 import { store } from '../services/store';
 import { User, Patient, Medication, Appointment } from '../types';
@@ -9,14 +9,16 @@ import { COLORS } from '../constants';
 interface DashboardProps {
   onNavigate: (path: string) => void;
   user: User;
+  patientId: string;
+  onSelectPatient: (id: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user, patientId, onSelectPatient }) => {
   const patients = store.getPatients();
-  const [selectedPatientId, setSelectedPatientId] = useState<string>(patients[0]?.id || '');
-  
-  const selectedPatient = useMemo(() => 
-    patients.find(p => p.id === selectedPatientId), 
+  const selectedPatientId = patientId;
+
+  const selectedPatient = useMemo(() =>
+    patients.find(p => p.id === selectedPatientId),
     [selectedPatientId, patients]
   );
 
@@ -62,7 +64,30 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user }) => {
       });
   }, [medications]);
 
-  if (!selectedPatient) return <div className="p-10 text-center">Nenhum paciente cadastrado.</div>;
+  if (patients.length === 0) {
+    return <div className="p-10 text-center text-gray-400">Nenhum paciente cadastrado ainda. Cadastre um paciente em "Pacientes".</div>;
+  }
+
+  // Seção 5: nunca exibir um paciente como selecionado quando nenhum estiver — estado neutro explícito.
+  if (!selectedPatient) {
+    return (
+      <Card className="py-24 text-center flex flex-col items-center gap-6 max-w-xl mx-auto mt-10 border-dashed border-2">
+        <span className="text-5xl opacity-20">🧑‍🤝‍🧑</span>
+        <div>
+          <p className="text-lg font-bold text-textDark dark:text-slate-100 poppins">Nenhum paciente selecionado</p>
+          <p className="text-sm text-gray-400 mt-1">Selecione um paciente para ver o resumo do dia.</p>
+        </div>
+        <select
+          className="w-full max-w-xs px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-sm text-deepBlue dark:text-sky-400 outline-none shadow-sm"
+          value=""
+          onChange={(e) => onSelectPatient(e.target.value)}
+        >
+          <option value="">Selecionar paciente...</option>
+          {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
+        </select>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in max-w-7xl mx-auto pb-24">
@@ -83,12 +108,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate, user }) => {
               )}
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <select 
+              <select
                 className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded-md border-none outline-none cursor-pointer hover:bg-gray-100 transition-colors"
                 value={selectedPatientId}
-                onChange={(e) => setSelectedPatientId(e.target.value)}
+                onChange={(e) => onSelectPatient(e.target.value)}
               >
-                {patients.map(p => <option key={p.id} value={p.id}>Mudar Paciente</option>)}
+                {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
               </select>
               <div className="flex items-center gap-2">
                 <div className={`h-2 w-2 rounded-full ${analysis?.level === 'Alto' ? 'bg-red-500' : 'bg-vitalGreen'} animate-pulse`}></div>

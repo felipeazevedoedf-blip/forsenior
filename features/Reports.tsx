@@ -151,7 +151,6 @@ const Reports: React.FC<ReportsProps> = ({ user }) => {
                    <div className="space-y-1">
                       <p className="text-lg font-bold text-textDark">{patient.nomeCompleto}</p>
                       <p className="text-sm text-gray-500">Nascimento: {new Date(patient.dataNascimento).toLocaleDateString()}</p>
-                      <p className="text-sm text-gray-500">CPF: {patient.cpf}</p>
                    </div>
                 </section>
                 <section>

@@ -8,11 +8,21 @@ import { riskService, RiskAnalysisResult } from '../services/riskService';
 interface VitalRiskChecklistProps {
   user: User;
   patientId?: string;
+  onSelectPatient?: (id: string) => void;
 }
 
-const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId }) => {
+const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId, onSelectPatient }) => {
   const patients = store.getPatients();
   const [selectedId, setSelectedId] = React.useState(patientId || '');
+
+  React.useEffect(() => {
+    setSelectedId(patientId || '');
+  }, [patientId]);
+
+  const handleSelectPatient = (id: string) => {
+    setSelectedId(id);
+    onSelectPatient?.(id);
+  };
 
   const analysis = useMemo(() => {
     if (!selectedId) return null;
@@ -53,7 +63,7 @@ const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId
           <select 
             className="w-full md:w-64 px-4 py-2 rounded-xl border border-gray-100 bg-white font-bold text-sm text-[#0D4F6A] shadow-sm outline-none focus:ring-2 focus:ring-[#0D4F6A]"
             value={selectedId}
-            onChange={e => setSelectedId(e.target.value)}
+            onChange={e => handleSelectPatient(e.target.value)}
           >
             <option value="">Selecione um Paciente...</option>
             {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}

@@ -70,8 +70,14 @@ const TestCard: React.FC<TestCardProps> = ({ testType, results, onAdd }) => {
   );
 };
 
-const FunctionalTests: React.FC<{ user: User }> = ({ user }) => {
-  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
+interface FunctionalTestsProps {
+  user: User;
+  patientId: string;
+  onSelectPatient: (id: string) => void;
+}
+
+const FunctionalTests: React.FC<FunctionalTestsProps> = ({ user, patientId, onSelectPatient }) => {
+  const selectedPatientId = patientId;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTestType, setActiveTestType] = useState<string>('');
   
@@ -132,10 +138,10 @@ const FunctionalTests: React.FC<{ user: User }> = ({ user }) => {
           <h2 className="text-3xl font-bold text-textDark dark:text-slate-100 poppins tracking-tight">Registro de Evolução</h2>
           <p className="text-gray-500 dark:text-slate-400 font-medium text-sm">Realize e documente as avaliações de autonomia.</p>
         </div>
-        <select 
+        <select
           className="w-full md:w-72 px-4 py-3 rounded-xl border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-sm text-deepBlue dark:text-sky-400 shadow-xl outline-none"
           value={selectedPatientId}
-          onChange={e => setSelectedPatientId(e.target.value)}
+          onChange={e => onSelectPatient(e.target.value)}
         >
           <option value="">Selecione o Paciente...</option>
           {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}

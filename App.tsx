@@ -2,27 +2,28 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, Medication, MedicationStatus } from './types';
 import Sidebar from './components/Sidebar';
+import PatientContextBar from './components/PatientContextBar';
 import Dashboard from './features/Dashboard';
 import PatientList from './features/Patients';
 import Schedule from './features/Schedule';
 import Demands from './features/Demands';
 import Reports from './features/Reports';
 import FunctionalTests from './features/FunctionalTests';
+import Professionals from './features/Professionals';
 import Admin from './features/Admin';
 import CaregiverChecklist from './features/CaregiverChecklist';
-import Wearables from './features/Wearables';
 import Login from './features/Login';
-import TeamChatBar from './components/TeamChatBar';
-import FamilyForm from './features/FamilyForm';
-import SafetyIntelligence from './features/SafetyIntelligence';
 import MedicationModule from './features/MedicationModule';
 import MedicationAlarm from './components/MedicationAlarm';
 import EnvironmentalCheck from './features/EnvironmentalCheck';
 import VitalRiskChecklist from './features/VitalRiskChecklist';
-import FallPrediction from './features/FallPrediction';
 import { store } from './services/store';
 import { auth } from './services/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
+
+// Nota (Prompt Mestre, seções 17 e 18): IA Preditiva de Queda (FallPrediction /
+// SafetyIntelligence / predictionService), Wearables e Chat Interno (TeamChatBar /
+// Chat) permanecem DESATIVADOS — não são importados nem roteados aqui de propósito.
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(store.getCurrentUser());
@@ -31,6 +32,8 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('forsenior-theme') === 'dark');
   const [activeAlarm, setActiveAlarm] = useState<{ med: Medication, time: string } | null>(null);
+  // Paciente em contexto (seção 5): nunca inicia com um paciente pré-selecionado.
+  const [selectedPatientId, setSelectedPatientId] = useState('');
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -71,22 +74,23 @@ const App: React.FC = () => {
 
   const renderContent = () => {
     switch (currentPath) {
-      case 'dashboard': return <Dashboard onNavigate={setCurrentPath} user={currentUser!} />;
-      case 'patients': return <PatientList user={currentUser!} onNavigate={setCurrentPath} />;
+      case 'dashboard': return <Dashboard onNavigate={setCurrentPath} user={currentUser!} patientId={selectedPatientId} onSelectPatient={setSelectedPatientId} />;
+      case 'patients': return <PatientList user={currentUser!} onNavigate={setCurrentPath} onSelectPatient={setSelectedPatientId} />;
       case 'schedule': return <Schedule user={currentUser!} />;
-      case 'tests': return <FunctionalTests user={currentUser!} />;
-      case 'medications': return <MedicationModule user={currentUser!} />;
+      case 'tests': return <FunctionalTests user={currentUser!} patientId={selectedPatientId} onSelectPatient={setSelectedPatientId} />;
+      case 'medications': return <MedicationModule user={currentUser!} patientId={selectedPatientId || undefined} onSelectPatient={setSelectedPatientId} />;
       case 'demands': return <Demands user={currentUser!} />;
       case 'macro_cycle': return <Demands user={currentUser!} />;
       case 'micro_cycle': return <Demands user={currentUser!} />;
-      case 'safety': return <VitalRiskChecklist user={currentUser!} />;
-      case 'env_check': return <EnvironmentalCheck user={currentUser!} />;
+      case 'safety': return <VitalRiskChecklist user={currentUser!} patientId={selectedPatientId || undefined} onSelectPatient={setSelectedPatientId} />;
+      case 'env_check': return <EnvironmentalCheck user={currentUser!} patientId={selectedPatientId || undefined} onSelectPatient={setSelectedPatientId} />;
+      case 'professionals': return <Professionals user={currentUser!} />;
       case 'routine': return <CaregiverChecklist user={currentUser!} />;
       case 'reports': return <Reports user={currentUser!} onNavigate={setCurrentPath} />;
       case 'admin': return <Admin user={currentUser!} />;
       case 'lgpd': return <Admin user={currentUser!} />;
-      case 'emergency': return <VitalRiskChecklist user={currentUser!} />; // Mapeado para tela de risco/emergência
-      default: return <Dashboard onNavigate={setCurrentPath} user={currentUser!} />;
+      case 'emergency': return <VitalRiskChecklist user={currentUser!} patientId={selectedPatientId || undefined} onSelectPatient={setSelectedPatientId} />; // Mapeado para tela de risco/emergência
+      default: return <Dashboard onNavigate={setCurrentPath} user={currentUser!} patientId={selectedPatientId} onSelectPatient={setSelectedPatientId} />;
     }
   };
 
@@ -115,7 +119,13 @@ const App: React.FC = () => {
         </div>
 
         <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          <TeamChatBar user={currentUser} />
+          {currentPath !== 'dashboard' && (
+            <PatientContextBar
+              patients={store.getPatients()}
+              selectedPatientId={selectedPatientId}
+              onSelectPatient={setSelectedPatientId}
+            />
+          )}
           {renderContent()}
         </main>
       </div>
