@@ -121,3 +121,22 @@ export type AuditLogEntry = { field: string; oldValue: any; newValue: any; };
 export type FamilyAssessment = { id: string; patientId: string; patientName: string; respondentName: string; relationship: string; date: string; answers: Record<string, string>; observations: string; consent: any; };
 export type ProfessionalLog = { id: string; professionalId: string; professionalName: string; changedByUserId: string; changedByUserName: string; timestamp: string; action: string; changes?: AuditLogEntry[]; };
 export type PatientLog = { id: string; patientId: string; changedByUserId: string; changedByUserName: string; timestamp: string; action: string; changes?: AuditLogEntry[]; };
+
+// Portal da Família: todo acesso precisa ser previamente cadastrado e aprovado
+// pelo Administrador da clínica — ninguém entra apenas escolhendo um paciente.
+export type FamilyAccessStatus = 'pending' | 'approved' | 'denied';
+export type FamilyAccessRequest = {
+  id: string;
+  clinicId: string;
+  patientId: string;
+  patientName: string;
+  requesterName: string;
+  relationship: string;
+  phone: string;
+  accessCode: string;
+  status: FamilyAccessStatus;
+  requestedAt: string;
+  decidedAt?: string;
+  decidedByUserId?: string;
+  decidedByUserName?: string;
+};

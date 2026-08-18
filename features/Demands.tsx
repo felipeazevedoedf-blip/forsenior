@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge, Input, Modal } from '../components/ui';
+import { IconTarget, IconAward, IconEdit, IconFlag } from '../components/icons';
 import { store } from '../services/store';
 import { MacroGoal, MicroGoal, MacroGoalStatus, MicroGoalStatus, User, UserRole, Patient, Professional } from '../types';
 
@@ -118,7 +119,7 @@ const Demands: React.FC<DemandsProps> = ({ user }) => {
     <div className="space-y-8 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins">🎯 Periodização Clínica</h2>
+          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins flex items-center gap-2"><IconTarget className="w-6 h-6" /> Periodização Clínica</h2>
           <p className="text-gray-500 font-medium">Ciclos Maiores (Macros) e Microciclos (Etapas).</p>
         </div>
         <div className="flex gap-3 w-full md:w-auto">
@@ -141,7 +142,7 @@ const Demands: React.FC<DemandsProps> = ({ user }) => {
       <div className="space-y-8">
         {macroGoals.length === 0 ? (
           <div className="text-center py-24 bg-white rounded-[2rem] border-2 border-dashed border-gray-100">
-            <div className="text-5xl mb-4">🏆</div>
+            <IconAward className="w-12 h-12 mb-4 mx-auto text-[#0D4F6A]/30" />
             <p className="text-gray-400 font-bold poppins">Inicie definindo um Ciclo Maior para este paciente.</p>
           </div>
         ) : (
@@ -201,8 +202,8 @@ const Demands: React.FC<DemandsProps> = ({ user }) => {
                        <Button size="sm" variant="ghost" onClick={() => { setActiveMacroId(macro.id); setIsMicroModalOpen(true); }} className="text-[10px]">
                          + Add Microciclo
                        </Button>
-                       <Button size="sm" variant="ghost" onClick={() => { setMacroForm(macro); setEditingMacro(macro); setIsMacroModalOpen(true); }} className="text-[10px]">
-                         ✏️ Editar Macro
+                       <Button size="sm" variant="ghost" onClick={() => { setMacroForm(macro); setEditingMacro(macro); setIsMacroModalOpen(true); }} className="text-[10px] gap-1">
+                         <IconEdit className="w-3 h-3" /> Editar Macro
                        </Button>
                        <div className="flex-1"></div>
                        <select 
@@ -217,7 +218,7 @@ const Demands: React.FC<DemandsProps> = ({ user }) => {
 
                   <div className="w-full lg:w-96 space-y-3 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
                     <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-2">
-                      <span>📌 Microciclos (1-2 semanas)</span>
+                      <span className="flex items-center gap-1.5"><IconFlag className="w-3.5 h-3.5" /> Microciclos (1-2 semanas)</span>
                       <span className="w-5 h-5 rounded-full bg-white border border-gray-100 flex items-center justify-center text-[8px] font-bold text-[#0D4F6A]">{macrosMicros.length}</span>
                     </h4>
                     <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">

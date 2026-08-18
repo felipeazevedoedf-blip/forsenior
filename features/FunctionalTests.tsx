@@ -4,6 +4,7 @@ import { Card, Button, Input, Modal, Badge } from '../components/ui';
 import { store } from '../services/store';
 import { FunctionalTest, Patient, User, UserRole } from '../types';
 import { TEST_TYPES, COLORS } from '../constants';
+import { IconActivity, IconTrendingUp, IconHand, IconScale, IconAlertTriangle, IconBrain, IconRuler, IconClipboardList, IconProps } from '../components/icons';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface TestCardProps {
@@ -70,8 +71,14 @@ const TestCard: React.FC<TestCardProps> = ({ testType, results, onAdd }) => {
   );
 };
 
-const FunctionalTests: React.FC<{ user: User }> = ({ user }) => {
-  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
+interface FunctionalTestsProps {
+  user: User;
+  patientId: string;
+  onSelectPatient: (id: string) => void;
+}
+
+const FunctionalTests: React.FC<FunctionalTestsProps> = ({ user, patientId, onSelectPatient }) => {
+  const selectedPatientId = patientId;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTestType, setActiveTestType] = useState<string>('');
   
@@ -121,8 +128,9 @@ const FunctionalTests: React.FC<{ user: User }> = ({ user }) => {
     setIsModalOpen(true);
   };
 
-  const testIcons: Record<string, string> = {
-    TUG: '🚶', SitStand: '🪑', ManualGrip: '✊', GaitBalance: '⚖️', FallScale: '🚨', MiniCog: '🧠', Flexibility: '📏', AVD: '📋'
+  const testIcons: Record<string, React.FC<IconProps>> = {
+    TUG: IconActivity, SitStand: IconTrendingUp, ManualGrip: IconHand, GaitBalance: IconScale,
+    FallScale: IconAlertTriangle, MiniCog: IconBrain, Flexibility: IconRuler, AVD: IconClipboardList
   };
 
   return (
@@ -132,10 +140,10 @@ const FunctionalTests: React.FC<{ user: User }> = ({ user }) => {
           <h2 className="text-3xl font-bold text-textDark dark:text-slate-100 poppins tracking-tight">Registro de Evolução</h2>
           <p className="text-gray-500 dark:text-slate-400 font-medium text-sm">Realize e documente as avaliações de autonomia.</p>
         </div>
-        <select 
+        <select
           className="w-full md:w-72 px-4 py-3 rounded-xl border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-sm text-deepBlue dark:text-sky-400 shadow-xl outline-none"
           value={selectedPatientId}
-          onChange={e => setSelectedPatientId(e.target.value)}
+          onChange={e => onSelectPatient(e.target.value)}
         >
           <option value="">Selecione o Paciente...</option>
           {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
@@ -157,8 +165,8 @@ const FunctionalTests: React.FC<{ user: User }> = ({ user }) => {
                   : 'bg-gray-50/50 dark:bg-slate-900 border-transparent text-gray-300 dark:text-slate-700 cursor-not-allowed opacity-50'
                 }`}
             >
-              <span className={`text-2xl transition-transform group-hover:scale-125 ${!selectedPatientId ? 'grayscale' : ''}`}>
-                {testIcons[type.id] || '📋'}
+              <span className={`text-deepBlue dark:text-sky-400 transition-transform group-hover:scale-125 ${!selectedPatientId ? 'grayscale' : ''}`}>
+                {React.createElement(testIcons[type.id] || IconClipboardList, { className: 'w-6 h-6' })}
               </span>
               <span className="text-[9px] font-black uppercase text-center text-deepBlue dark:text-sky-400 tracking-tighter">
                 {type.name.split(' (')[0]}

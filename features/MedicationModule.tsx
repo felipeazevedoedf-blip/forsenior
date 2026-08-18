@@ -1,6 +1,7 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, Button, Input, Modal, Badge } from '../components/ui';
+import { IconCheck, IconFolder, IconPill, IconStethoscope } from '../components/icons';
 import { store } from '../services/store';
 import { Medication, Patient, User, UserRole, MedicationLog, MedicationStatus } from '../types';
 import { COLORS } from '../constants';
@@ -8,10 +9,20 @@ import { COLORS } from '../constants';
 interface MedicationModuleProps {
   user: User;
   patientId?: string;
+  onSelectPatient?: (id: string) => void;
 }
 
-const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: initialPatientId }) => {
+const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: initialPatientId, onSelectPatient }) => {
   const [selectedPatientId, setSelectedPatientId] = useState<string>(initialPatientId || '');
+
+  useEffect(() => {
+    setSelectedPatientId(initialPatientId || '');
+  }, [initialPatientId]);
+
+  const handleSelectPatient = (id: string) => {
+    setSelectedPatientId(id);
+    onSelectPatient?.(id);
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isJustifyModalOpen, setIsJustifyModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'active' | 'history'>('active');
@@ -112,7 +123,7 @@ const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: in
             <select 
               className="flex-1 md:w-64 px-4 py-3 rounded-xl border border-gray-100 bg-white font-bold text-sm text-deepBlue shadow-sm outline-none focus:ring-2 focus:ring-deepBlue/10"
               value={selectedPatientId}
-              onChange={e => setSelectedPatientId(e.target.value)}
+              onChange={e => handleSelectPatient(e.target.value)}
             >
               <option value="">Selecione o Paciente...</option>
               {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
@@ -144,17 +155,17 @@ const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: in
                 onChange={e => setSearchTerm(e.target.value)} 
               />
               <div className="flex flex-col gap-2 mt-4">
-                 <button 
+                 <button
                   onClick={() => setViewMode('active')}
-                  className={`text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${viewMode === 'active' ? 'bg-white text-deepBlue shadow-sm' : 'text-gray-400'}`}
+                  className={`text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'active' ? 'bg-white text-deepBlue shadow-sm' : 'text-gray-400'}`}
                  >
-                   ✅ Ativos ({medications.filter(m => m.active).length})
+                   <IconCheck className="w-3.5 h-3.5" /> Ativos ({medications.filter(m => m.active).length})
                  </button>
-                 <button 
+                 <button
                   onClick={() => setViewMode('history')}
-                  className={`text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${viewMode === 'history' ? 'bg-white text-deepBlue shadow-sm' : 'text-gray-400'}`}
+                  className={`text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${viewMode === 'history' ? 'bg-white text-deepBlue shadow-sm' : 'text-gray-400'}`}
                  >
-                   📁 Histórico
+                   <IconFolder className="w-3.5 h-3.5" /> Histórico
                  </button>
               </div>
             </Card>
@@ -164,7 +175,7 @@ const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: in
           <div className="lg:col-span-3 space-y-6">
             {filteredMeds.length === 0 ? (
               <Card className="py-24 text-center border-dashed border-2 border-gray-100 bg-gray-50/30">
-                <span className="text-5xl mb-4 block opacity-20">💊</span>
+                <IconPill className="w-12 h-12 mb-4 mx-auto opacity-20" />
                 <p className="font-bold text-gray-400 poppins">Nenhum medicamento encontrado para os filtros selecionados.</p>
               </Card>
             ) : (
@@ -195,7 +206,7 @@ const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: in
                                 'bg-gray-50 text-gray-400 border-gray-100'
                               }`}>
                                 {time}
-                                {isTaken && <span>✓</span>}
+                                {isTaken && <IconCheck className="w-3 h-3" />}
                               </div>
                               {!isTaken && !isMissed && (
                                 <div className="flex gap-1">
@@ -223,7 +234,7 @@ const MedicationModule: React.FC<MedicationModuleProps> = ({ user, patientId: in
         </div>
       ) : (
         <Card className="py-32 text-center text-gray-400 flex flex-col items-center gap-4">
-          <span className="text-6xl opacity-20">⚕️</span>
+          <IconStethoscope className="w-14 h-14 opacity-20" />
           <p className="font-bold poppins max-w-sm">Selecione um paciente para gerenciar o plano farmacológico.</p>
         </Card>
       )}

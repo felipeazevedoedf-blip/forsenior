@@ -4,6 +4,7 @@ import { Card, Button, Badge, Modal, Input } from '../components/ui';
 import { store } from '../services/store';
 import { Patient, User, UserRole, PatientTimelineEvent, ClinicalReport } from '../types';
 import { securityService } from '../services/security';
+import { IconEye, IconPill, IconClock, IconUser, IconFolder } from '../components/icons';
 import PatientTimeline from './PatientTimeline';
 import PatientClinicalOverview from './PatientClinicalOverview';
 import MedicationModule from './MedicationModule';
@@ -37,7 +38,6 @@ const PatientDetail: React.FC<{ patientId: string, user: User, onBack: () => voi
           <div>
             <h2 className="text-2xl font-bold text-[#0D4F6A] dark:text-sky-400 poppins">{patient.nomeCompleto}</h2>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-gray-400 font-bold uppercase">CPF: {securityService.maskCPF(patient.cpf)}</span>
               <Badge variant={patient.consentimentoLGPD ? 'success' : 'error'}>{patient.consentimentoLGPD ? 'LGPD OK' : 'PENDENTE'}</Badge>
             </div>
           </div>
@@ -46,11 +46,11 @@ const PatientDetail: React.FC<{ patientId: string, user: User, onBack: () => voi
 
       <div className="flex border-b border-gray-200 dark:border-slate-800 overflow-x-auto gap-4">
         {[
-          { id: 'overview', label: 'Visão 360º', icon: '👁️', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-          { id: 'meds', label: 'Medicamentos', icon: '💊', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-          { id: 'timeline', label: 'Histórico', icon: '🕒', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
-          { id: 'info', label: 'Informações', icon: '👤', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
-          { id: 'docs', label: 'Arquivos', icon: '📁', roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] }
+          { id: 'overview', label: 'Visão 360º', Icon: IconEye, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+          { id: 'meds', label: 'Medicamentos', Icon: IconPill, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+          { id: 'timeline', label: 'Histórico', Icon: IconClock, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] },
+          { id: 'info', label: 'Informações', Icon: IconUser, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL, UserRole.VIEWER] },
+          { id: 'docs', label: 'Arquivos', Icon: IconFolder, roles: [UserRole.ADMIN, UserRole.PROFESSIONAL] }
         ].filter(tab => tab.roles.includes(user.role)).map(tab => (
           <button
             key={tab.id}
@@ -59,7 +59,7 @@ const PatientDetail: React.FC<{ patientId: string, user: User, onBack: () => voi
               activeTab === tab.id ? 'border-[#0D4F6A] text-[#0D4F6A] dark:text-sky-400 dark:border-sky-400' : 'border-transparent text-gray-400'
             }`}
           >
-            <span>{tab.icon}</span> {tab.label}
+            <tab.Icon className="w-4 h-4" /> {tab.label}
           </button>
         ))}
       </div>
@@ -126,10 +126,15 @@ const PatientDetail: React.FC<{ patientId: string, user: User, onBack: () => voi
   );
 };
 
-const PatientList: React.FC<{ user: User, onNavigate: (path: string) => void }> = ({ user, onNavigate }) => {
+const PatientList: React.FC<{ user: User, onNavigate: (path: string) => void, onSelectPatient?: (id: string) => void }> = ({ user, onNavigate, onSelectPatient }) => {
   const [patients, setPatients] = useState<Patient[]>(store.getPatients());
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
+  const openPatient = (id: string) => {
+    setSelectedPatientId(id);
+    onSelectPatient?.(id);
+  };
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
   const [newPatient, setNewPatient] = useState<Partial<Patient>>({
@@ -232,14 +237,14 @@ const PatientList: React.FC<{ user: User, onNavigate: (path: string) => void }> 
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map(p => (
-          <Card key={p.id} className="hover:shadow-xl transition-all border-l-4 border-deepBlue dark:border-sky-500 cursor-pointer" onClick={() => setSelectedPatientId(p.id)}>
+          <Card key={p.id} className="hover:shadow-xl transition-all border-l-4 border-deepBlue dark:border-sky-500 cursor-pointer" onClick={() => openPatient(p.id)}>
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-gray-50 dark:bg-slate-700 rounded-2xl flex items-center justify-center text-deepBlue dark:text-sky-400 font-black text-xl">
                 {p.nomeCompleto.charAt(0)}
               </div>
               <div>
                 <h3 className="font-bold text-deepBlue dark:text-sky-400 poppins truncate max-w-[180px]">{p.nomeCompleto}</h3>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">CPF: {securityService.maskCPF(p.cpf)}</p>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{p.pathologies[0] || 'Sem patologia registrada'}</p>
               </div>
             </div>
             

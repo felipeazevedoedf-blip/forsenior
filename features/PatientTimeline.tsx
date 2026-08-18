@@ -1,6 +1,10 @@
 
 import React, { useState, useMemo } from 'react';
 import { Card, Badge, Button, Input, Modal } from '../components/ui';
+import {
+  IconRocket, IconTrendingUp, IconTarget, IconFlag, IconCalendar, IconSiren,
+  IconScale, IconFolder, IconEdit, IconLock, IconUser
+} from '../components/icons';
 import { PatientTimelineEvent, TimelineEventType, User, UserRole } from '../types';
 import { store } from '../services/store';
 
@@ -25,15 +29,15 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patientId, events, us
 
   const getEventStyle = (type: TimelineEventType) => {
     switch (type) {
-      case 'REGISTRATION': return { icon: '🚀', color: 'bg-indigo-600', label: 'Admissão' };
-      case 'FUNCTIONAL_TEST': return { icon: '📈', color: 'bg-green-600', label: 'Teste Clínico' };
-      case 'MACRO_GOAL': return { icon: '🎯', color: 'bg-orange-600', label: 'Ciclo Maior' };
-      case 'MICRO_GOAL': return { icon: '📌', color: 'bg-yellow-500', label: 'Etapa' };
-      case 'ATTENDANCE': return { icon: '📅', color: 'bg-blue-600', label: 'Atendimento' };
-      case 'CRITICAL_EVENT': return { icon: '🚨', color: 'bg-red-600', label: 'Intercorrência' };
-      case 'LGPD_UPDATE': return { icon: '⚖️', color: 'bg-slate-800', label: 'Auditoria LGPD' };
-      case 'DOCUMENT_UPLOAD': return { icon: '📁', color: 'bg-teal-600', label: 'Arquivo' };
-      default: return { icon: '📝', color: 'bg-gray-500', label: 'Nota Técnica' };
+      case 'REGISTRATION': return { Icon: IconRocket, color: 'bg-indigo-600', label: 'Admissão' };
+      case 'FUNCTIONAL_TEST': return { Icon: IconTrendingUp, color: 'bg-green-600', label: 'Teste Clínico' };
+      case 'MACRO_GOAL': return { Icon: IconTarget, color: 'bg-orange-600', label: 'Ciclo Maior' };
+      case 'MICRO_GOAL': return { Icon: IconFlag, color: 'bg-yellow-500', label: 'Etapa' };
+      case 'ATTENDANCE': return { Icon: IconCalendar, color: 'bg-blue-600', label: 'Atendimento' };
+      case 'CRITICAL_EVENT': return { Icon: IconSiren, color: 'bg-red-600', label: 'Intercorrência' };
+      case 'LGPD_UPDATE': return { Icon: IconScale, color: 'bg-slate-800', label: 'Auditoria LGPD' };
+      case 'DOCUMENT_UPLOAD': return { Icon: IconFolder, color: 'bg-teal-600', label: 'Arquivo' };
+      default: return { Icon: IconEdit, color: 'bg-gray-500', label: 'Nota Técnica' };
     }
   };
 
@@ -79,7 +83,7 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patientId, events, us
   if (user.role === UserRole.VIEWER) {
     return (
       <div className="p-12 text-center bg-gray-50 rounded-[2rem] border border-gray-100 flex flex-col items-center gap-4">
-        <span className="text-4xl">🔐</span>
+        <IconLock className="w-10 h-10 text-gray-300" />
         <h3 className="text-xl font-bold text-gray-400 poppins uppercase tracking-widest">Acesso Reservado</h3>
         <p className="text-gray-400 max-w-sm text-sm font-medium">
           A Linha do Tempo Cronológica contém dados técnicos de auditoria e evolução restritos à equipe multiprofissional.
@@ -144,7 +148,7 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patientId, events, us
                 <div key={event.id} className="relative group">
                   {/* Marcador flutuante na linha */}
                   <div className={`absolute -left-10 md:-left-12 top-0 w-10 h-10 rounded-full border-4 border-white shadow-xl flex items-center justify-center text-white z-10 transition-all duration-300 group-hover:scale-125 ${style.color}`}>
-                    <span className="text-lg">{style.icon}</span>
+                    <style.Icon className="w-4.5 h-4.5" />
                   </div>
 
                   {/* Tag de Data Lateral */}
@@ -171,7 +175,7 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patientId, events, us
                     
                     <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t border-gray-50 mt-auto">
                       <div className="flex items-center gap-2">
-                         <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-xs grayscale">👤</div>
+                         <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 grayscale"><IconUser className="w-3.5 h-3.5" /></div>
                          <div className="flex flex-col">
                             <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest leading-none">Profissional</span>
                             <span className="text-[10px] font-bold text-gray-500">{event.professionalName || 'Registro Automático'}</span>
@@ -205,17 +209,17 @@ const PatientTimeline: React.FC<PatientTimelineProps> = ({ patientId, events, us
             <div>
               <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 ml-1">Tipo de Evento</label>
               <div className="grid grid-cols-2 gap-2">
-                <button 
+                <button
                   onClick={() => setNewEvent({...newEvent, type: 'CLINICAL_NOTE'})}
-                  className={`p-3 rounded-xl border-2 font-bold text-xs transition-all ${newEvent.type === 'CLINICAL_NOTE' ? 'border-[#0D4F6A] bg-[#0D4F6A]/5 text-[#0D4F6A]' : 'border-gray-50 text-gray-400'}`}
+                  className={`p-3 rounded-xl border-2 font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${newEvent.type === 'CLINICAL_NOTE' ? 'border-[#0D4F6A] bg-[#0D4F6A]/5 text-[#0D4F6A]' : 'border-gray-50 text-gray-400'}`}
                 >
-                  📝 Nota Técnica
+                  <IconEdit className="w-3.5 h-3.5" /> Nota Técnica
                 </button>
-                <button 
+                <button
                   onClick={() => setNewEvent({...newEvent, type: 'CRITICAL_EVENT'})}
-                  className={`p-3 rounded-xl border-2 font-bold text-xs transition-all ${newEvent.type === 'CRITICAL_EVENT' ? 'border-red-600 bg-red-50 text-red-600' : 'border-gray-50 text-gray-400'}`}
+                  className={`p-3 rounded-xl border-2 font-bold text-xs transition-all flex items-center justify-center gap-1.5 ${newEvent.type === 'CRITICAL_EVENT' ? 'border-red-600 bg-red-50 text-red-600' : 'border-gray-50 text-gray-400'}`}
                 >
-                  🚨 Intercorrência
+                  <IconSiren className="w-3.5 h-3.5" /> Intercorrência
                 </button>
               </div>
             </div>

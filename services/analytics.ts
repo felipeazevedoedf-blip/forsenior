@@ -12,7 +12,6 @@ export type AnalysisResult = {
   score: number;
   level: 'Baixo' | 'Moderado' | 'Alto';
   factors: RiskFactor[];
-  probabilityEstimate?: string;
   recommendations: string[];
   lastUpdate: string;
 };
@@ -89,13 +88,11 @@ export const analyticsService = {
     }
 
     const level = score >= 10 ? 'Alto' : score >= 5 ? 'Moderado' : 'Baixo';
-    const probability = level === 'Alto' ? 'Elevada (>75%)' : level === 'Moderado' ? 'Moderada (30-50%)' : 'Baixa';
 
     return {
       score,
       level,
       factors,
-      probabilityEstimate: probability,
       recommendations,
       lastUpdate: new Date().toISOString()
     };

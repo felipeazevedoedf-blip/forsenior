@@ -1,6 +1,7 @@
 
 import React, { useMemo } from 'react';
 import { Card, Badge, Button } from '../components/ui';
+import { IconShieldAlert, IconBrain, IconHeart, IconPill, IconActivity, IconAlertTriangle } from '../components/icons';
 import { store } from '../services/store';
 import { User, Patient } from '../types';
 import { riskService, RiskAnalysisResult } from '../services/riskService';
@@ -8,11 +9,21 @@ import { riskService, RiskAnalysisResult } from '../services/riskService';
 interface VitalRiskChecklistProps {
   user: User;
   patientId?: string;
+  onSelectPatient?: (id: string) => void;
 }
 
-const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId }) => {
+const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId, onSelectPatient }) => {
   const patients = store.getPatients();
   const [selectedId, setSelectedId] = React.useState(patientId || '');
+
+  React.useEffect(() => {
+    setSelectedId(patientId || '');
+  }, [patientId]);
+
+  const handleSelectPatient = (id: string) => {
+    setSelectedId(id);
+    onSelectPatient?.(id);
+  };
 
   const analysis = useMemo(() => {
     if (!selectedId) return null;
@@ -46,14 +57,14 @@ const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId
     <div className="space-y-6 animate-fade-in pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins">🚨 Checklist de Risco Vital</h2>
+          <h2 className="text-2xl font-bold text-[#0D4F6A] poppins flex items-center gap-2"><IconShieldAlert className="w-6 h-6" /> Checklist de Risco Vital</h2>
           <p className="text-gray-500 font-medium">Análise heurística baseada em protocolos clínicos ForSênior.</p>
         </div>
         {!patientId && (
           <select 
             className="w-full md:w-64 px-4 py-2 rounded-xl border border-gray-100 bg-white font-bold text-sm text-[#0D4F6A] shadow-sm outline-none focus:ring-2 focus:ring-[#0D4F6A]"
             value={selectedId}
-            onChange={e => setSelectedId(e.target.value)}
+            onChange={e => handleSelectPatient(e.target.value)}
           >
             <option value="">Selecione um Paciente...</option>
             {patients.map(p => <option key={p.id} value={p.id}>{p.nomeCompleto}</option>)}
@@ -63,7 +74,7 @@ const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId
 
       {!selectedId ? (
         <Card className="py-32 text-center text-gray-400 flex flex-col items-center gap-4">
-          <span className="text-5xl opacity-20">🧠</span>
+          <IconBrain className="w-12 h-12 opacity-20" />
           <p className="font-bold poppins">Selecione um paciente para iniciar a triagem automática.</p>
         </Card>
       ) : (
@@ -104,10 +115,10 @@ const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId
                         factor.points >= 3 ? 'bg-red-50 text-red-600' : 
                         factor.points >= 2 ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
                       }`}>
-                        {factor.category === 'Vital' ? '💓' : 
-                         factor.category === 'Medicação' ? '💊' :
-                         factor.category === 'Funcional' ? '🚶' :
-                         factor.category === 'Cognitivo' ? '🧠' : '⚠️'}
+                        {factor.category === 'Vital' ? <IconHeart className="w-5 h-5" /> :
+                         factor.category === 'Medicação' ? <IconPill className="w-5 h-5" /> :
+                         factor.category === 'Funcional' ? <IconActivity className="w-5 h-5" /> :
+                         factor.category === 'Cognitivo' ? <IconBrain className="w-5 h-5" /> : <IconAlertTriangle className="w-5 h-5" />}
                       </div>
                       <div className="flex-1">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{factor.category}</p>
@@ -125,7 +136,7 @@ const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId
             {analysis?.level === 'Alto' && (
               <div className="bg-red-600 p-6 rounded-[2rem] text-white shadow-xl shadow-red-900/20 animate-pulse">
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl">⚠️</span>
+                  <IconAlertTriangle className="w-8 h-8 shrink-0" />
                   <div>
                     <h4 className="font-bold poppins text-lg">Ação Prioritária Recomendada</h4>
                     <p className="text-sm opacity-90 leading-relaxed">
@@ -138,8 +149,8 @@ const VitalRiskChecklist: React.FC<VitalRiskChecklistProps> = ({ user, patientId
               </div>
             )}
 
-            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 text-[10px] text-blue-800 font-bold leading-relaxed uppercase tracking-wide text-center">
-              ⚠️ AVISO LEGAL: ESTE É UM SISTEMA DE APOIO À DECISÃO CLÍNICA. NÃO SUBSTITUI A AVALIAÇÃO MÉDICA SOBERANA E PRESENCIAL.
+            <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 text-[10px] text-blue-800 font-bold leading-relaxed uppercase tracking-wide text-center flex items-center justify-center gap-2">
+              <IconAlertTriangle className="w-4 h-4 shrink-0" /> AVISO LEGAL: ESTE É UM SISTEMA DE APOIO À DECISÃO CLÍNICA. NÃO SUBSTITUI A AVALIAÇÃO MÉDICA SOBERANA E PRESENCIAL.
             </div>
           </div>
         </div>
