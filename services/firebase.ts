@@ -3,12 +3,13 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY_AQUI", 
-  authDomain: "seu-projeto.firebaseapp.com",
-  projectId: "seu-projeto",
-  storageBucket: "seu-projeto.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:000000000000"
+  apiKey: "AIzaSyCa2PWbr5x_0cizXg0rbvTgLXMveNfJK0Y",
+  authDomain: "for-senior-70144.firebaseapp.com",
+  projectId: "for-senior-70144",
+  storageBucket: "for-senior-70144.firebasestorage.app",
+  messagingSenderId: "175822467055",
+  appId: "1:175822467055:web:60f3addd59a863501c901a",
+  measurementId: "G-LZ488MK0ZV"
 };
 
 // Verifica se a configuração é o placeholder padrão
